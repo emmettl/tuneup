@@ -108,21 +108,38 @@ describe('envelopes end', () => {
     }
   })
 
-  it('holds a sustained voice much longer than a struck one', async () => {
-    // KNOWN DEFECT, recorded here rather than hidden. The organ is declared sustained with
-    // `sustain: 1, decay: 0`, so its level should hold flat until released — and measured, it
-    // does not: peaks run 0.33 at 0.1s, 0.15 at 0.5s, 0.036 at 1s, 0.003 at 2s. Something in
-    // the render path is decaying a voice that schedules no decay, and the patch itself is
-    // correct. See the note in README/issues; it wants an hour with an oscilloscope.
-    //
-    // This asserts the weaker thing that IS currently true and still worth guarding: a
-    // sustained voice outlasts a struck one by a wide margin. When the defect is fixed, this
-    // should be tightened to assert the tail reaches the release time.
+  it('holds a sustained voice flat until it is released', async () => {
+    // This is the assertion that caught the release bug. An organ declares sustain 1 and
+    // decay 0, so it must hold at full level for the whole three seconds and only then fade.
+    // Before the fix it decayed across the entire note — 0.33 at 0.1s down to 0.003 at 2s —
+    // because the release ramp interpolated from the end of the ATTACK rather than from the
+    // held level. See EnvelopeResult in render.ts.
     const held = await render(4, (ctx, targets) => {
       renderVoice(ctx, buildVoice(PATCHES.organ, 60, 0.9), 0, targets).release(3)
     })
-    const struck = await instrument('pluck')
-    expect(held.tail).toBeGreaterThan(struck.tail * 3)
+    expect(held.tail, 'faded before it was released').toBeGreaterThan(2.9)
+  })
+
+  it('does not lose level while a sustained voice is held', async () => {
+    // The other half of the same bug, and the one a tail measurement alone would miss: it is
+    // not enough that sound is still present at 3s, it has to be at roughly full level.
+    const ctx = new OfflineAudioContext(1, 44100 * 4, 44100)
+    const output = ctx.createGain()
+    output.connect(ctx.destination)
+    renderVoice(ctx, buildVoice(PATCHES.organ, 60, 0.9), 0, {
+      output,
+      noise: noiseBuffer(ctx, 1),
+    }).release(3)
+    const data = (await ctx.startRendering()).getChannelData(0)
+    const peakNear = (seconds: number) => {
+      let peak = 0
+      const from = Math.floor(seconds * 44100)
+      for (let i = from; i < from + 4410; i++) peak = Math.max(peak, Math.abs(data[i]!))
+      return peak
+    }
+    const early = peakNear(0.2)
+    const late = peakNear(2.5)
+    expect(late / early, `${early.toFixed(3)} -> ${late.toFixed(3)}`).toBeGreaterThan(0.85)
   })
 })
 

@@ -26,7 +26,25 @@ export interface VoiceHandle {
  *   parameter's value happened to be at the last scheduled point, which for a re-struck note
  *   is the middle of the previous note's decay — audible as a note that starts halfway down.
  */
-function applyEnvelope(param: AudioParam, amp: AdsrSpec, peak: number, at: number): number {
+interface EnvelopeResult {
+  /** When it falls silent by itself, or Infinity if it holds until released. */
+  end: number
+  /**
+   * The flat level it settles at, or null if it decays to silence on its own.
+   *
+   * The release needs this. An exponential ramp interpolates from the LAST SCHEDULED EVENT,
+   * and a held envelope's last event is the end of its attack — so releasing a note three
+   * seconds later produced a ramp running from 6ms to 3.09s, decaying the note across its
+   * entire length. The organ measured 0.33 at 0.1s and 0.003 at 2s on a patch that schedules
+   * no decay at all. `cancelAndHoldAtTime` does not anchor it, because there is no automation
+   * after the release point for it to hold against.
+   *
+   * So the release anchors the value explicitly, and this is the value.
+   */
+  holdLevel: number | null
+}
+
+function applyEnvelope(param: AudioParam, amp: AdsrSpec, peak: number, at: number): EnvelopeResult {
   const attackEnd = at + amp.attack
   param.cancelScheduledValues(at)
   // The attack is LINEAR and starts at true zero. An exponential ramp cannot start at zero,
@@ -40,14 +58,10 @@ function applyEnvelope(param: AudioParam, amp: AdsrSpec, peak: number, at: numbe
   param.linearRampToValueAtTime(Math.max(SILENCE, peak), attackEnd)
 
   if (amp.sustain > 0) {
-    if (amp.decay > 0) {
-      param.exponentialRampToValueAtTime(
-        Math.max(SILENCE, peak * amp.sustain),
-        attackEnd + amp.decay,
-      )
-    }
-    // Held indefinitely; `release` schedules the tail.
-    return Infinity
+    const level = Math.max(SILENCE, peak * amp.sustain)
+    if (amp.decay > 0) param.exponentialRampToValueAtTime(level, attackEnd + amp.decay)
+    // Held indefinitely; `release` schedules the tail, anchored at `level`.
+    return { end: Infinity, holdLevel: level }
   }
 
   // Sustain of zero: the note decays away whether or not the key is held. A piano, not an
@@ -55,7 +69,7 @@ function applyEnvelope(param: AudioParam, amp: AdsrSpec, peak: number, at: numbe
   const decayEnd = attackEnd + Math.max(amp.decay, 0.01)
   param.exponentialRampToValueAtTime(SILENCE, decayEnd)
   param.setValueAtTime(0, decayEnd)
-  return decayEnd
+  return { end: decayEnd, holdLevel: null }
 }
 
 /**
@@ -74,7 +88,12 @@ function applyEnvelope(param: AudioParam, amp: AdsrSpec, peak: number, at: numbe
  * wrong but is the best available — and there it is at least correct for an immediate release,
  * which is what `kill` and a pointer-up actually do.
  */
-function startRelease(param: AudioParam, when: number, end: number): void {
+function startRelease(
+  param: AudioParam,
+  when: number,
+  end: number,
+  holdLevel: number | null,
+): void {
   const holdable = param as AudioParam & { cancelAndHoldAtTime?: (time: number) => void }
   if (typeof holdable.cancelAndHoldAtTime === 'function') {
     holdable.cancelAndHoldAtTime(when)
@@ -82,6 +101,13 @@ function startRelease(param: AudioParam, when: number, end: number): void {
     param.cancelScheduledValues(when)
     param.setValueAtTime(Math.max(SILENCE, param.value), when)
   }
+  // Anchor the level the ramp starts from.
+  //
+  // For a HELD envelope this is essential and cancelAndHoldAtTime is not enough: with no
+  // automation scheduled after `when` there is nothing for it to hold against, so the
+  // exponential ramp below interpolates from the last real event — the end of the attack —
+  // and decays the note across its whole length instead of only its tail. See EnvelopeResult.
+  if (holdLevel !== null) param.setValueAtTime(holdLevel, when)
   param.exponentialRampToValueAtTime(SILENCE, end)
   param.setValueAtTime(0, end)
 }
@@ -163,6 +189,7 @@ export function renderVoice(
 
   const oscillators: OscillatorNode[] = []
   const gains: GainNode[] = []
+  const holdLevels: (number | null)[] = []
   let silentAt = at
   // Whether ANY envelope sustains. Tracked separately from `silentAt` because one short
   // envelope must not be allowed to end the whole voice: the guitar's 30ms noise transient
@@ -184,8 +211,9 @@ export function renderVoice(
 
   plan.operators.forEach((operator, index) => {
     const gain = gains[index]!
-    const end = applyEnvelope(gain.gain, operator.amp, operator.gain, at)
-    if (Number.isFinite(end)) silentAt = Math.max(silentAt, end)
+    const envelope = applyEnvelope(gain.gain, operator.amp, operator.gain, at)
+    holdLevels[index] = envelope.holdLevel
+    if (Number.isFinite(envelope.end)) silentAt = Math.max(silentAt, envelope.end)
     else sustaining = true
 
     if (operator.modulates === undefined) {
@@ -202,8 +230,8 @@ export function renderVoice(
     source.buffer = targets.noise
     source.loop = true
     const gain = ctx.createGain()
-    const end = applyEnvelope(gain.gain, plan.noise.amp, plan.noise.gain, at)
-    if (Number.isFinite(end)) silentAt = Math.max(silentAt, end)
+    const envelope = applyEnvelope(gain.gain, plan.noise.amp, plan.noise.gain, at)
+    if (Number.isFinite(envelope.end)) silentAt = Math.max(silentAt, envelope.end)
     else sustaining = true
     if (plan.noise.filter) {
       const band = ctx.createBiquadFilter()
@@ -247,9 +275,9 @@ export function renderVoice(
   const releaseAt = (when: number): number => {
     const release = plan.operators.reduce((most, op) => Math.max(most, op.amp.release), 0.05)
     const end = when + release
-    for (const gain of gains) {
-      startRelease(gain.gain, when, end)
-    }
+    gains.forEach((gain, index) => {
+      startRelease(gain.gain, when, end, holdLevels[index] ?? null)
+    })
     stopAll(end + 0.02)
     return end
   }
