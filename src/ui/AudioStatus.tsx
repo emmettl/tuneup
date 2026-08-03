@@ -70,7 +70,7 @@ export default function AudioStatus() {
     void unlock()
     player().prepare()
     const ctx = audioContext()
-    const bus = player().busForTesting
+    const bus = player().bus
     if (!bus) return
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()

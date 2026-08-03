@@ -1,0 +1,53 @@
+.timbre {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.timbre-spectrum {
+  display: block;
+  width: 100%;
+  height: 110px;
+  background: #0d0818;
+  border: 1px solid var(--panel-edge);
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.timbre-controls {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  align-items: end;
+}
+
+.timbre-field { display: grid; gap: 4px; }
+
+.timbre-label {
+  font-size: 0.68rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.timbre-value { color: var(--ink); text-transform: none; letter-spacing: 0; }
+
+.timbre-field select,
+.timbre-field input[type='range'] {
+  width: 100%;
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  accent-color: var(--root);
+}
+
+.timbre-field select {
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: #16102b;
+  color: var(--ink);
+  border: 1px solid var(--panel-edge);
+}
+
+.timbre .control { align-self: end; }

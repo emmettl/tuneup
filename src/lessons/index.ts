@@ -162,6 +162,24 @@ export const LESSONS: LessonMeta[] = [
     after: ['the-blue-note'],
     load: () => import('./blues/TwelveBars.tsx'),
   },
+  {
+    slug: 'take-the-third-out',
+    title: 'Take the third out',
+    summary: 'Turn the gain up on a chord, then remove one note and hear rock guitar appear.',
+    unit: 'rock',
+    minutes: 6,
+    after: ['the-third-decides'],
+    load: () => import('./rock/TakeTheThirdOut.tsx'),
+  },
+  {
+    slug: 'the-sound-is-the-idea',
+    title: 'The sound is the idea',
+    summary: 'One note, four instruments. In electronic music the timbre often is the tune.',
+    unit: 'electronica',
+    minutes: 6,
+    after: ['four-on-the-floor'],
+    load: () => import('./electronica/TheSoundIsTheIdea.tsx'),
+  },
 ]
 
 export function lessonBySlug(slug: string): LessonMeta | undefined {

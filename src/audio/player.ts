@@ -62,9 +62,15 @@ export class Player {
     return this.master?.analyser ?? null
   }
 
-  /** The dry bus, exposed so the audio-status panel can inject a test tone through the real
-   *  master chain. Nothing in the app should route audio by hand — use `play` and friends. */
-  get busForTesting(): AudioNode | null {
+  /**
+   * The dry bus.
+   *
+   * Exposed so the two things that legitimately own their own nodes — the audio-status test
+   * tone and TimbreVoice, which has to be mutable while it sounds — can still go through the
+   * shared compressor and volume rather than round them. Nothing else should route audio by
+   * hand; use `play` and friends.
+   */
+  get bus(): AudioNode | null {
     return this.master?.bus ?? null
   }
 
