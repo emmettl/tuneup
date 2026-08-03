@@ -32,6 +32,12 @@ export function contextState(): AudioContextState | 'none' {
   return context?.state ?? 'none'
 }
 
+/** Whether a context has been built, without building one. Lets a caller warm the graph only
+ *  when doing so is free — see `Player.prepare`. */
+export function hasContext(): boolean {
+  return context !== undefined
+}
+
 export function onStateChange(listener: StateListener): () => void {
   listeners.add(listener)
   return () => listeners.delete(listener)

@@ -4,7 +4,7 @@
 // prop-drilling audio through lesson content would make every lesson author think about the
 // audio graph, and a lesson page with five widgets would end up with five of everything.
 
-import { audioContext, unlock } from './context.js'
+import { audioContext, hasContext, unlock } from './context.js'
 import { createMaster, type Master } from './master.js'
 import { renderVoice, type VoiceHandle } from './render.js'
 import { buildVoice } from './spec.js'
@@ -83,13 +83,24 @@ export class Player {
   }
 
   /**
-   * Warm the graph.
+   * Warm the graph, but only when that is free.
    *
    * A keypress has to sound in well under the ~30ms where a delay stops feeling like an
-   * instrument and starts feeling like a website. Building the master chain and the reverb
-   * impulse on the first note costs far more than that, so widgets call this on mount.
+   * instrument and starts feeling like a website, and building the master chain plus the
+   * reverb impulse on the first note costs more than that. So widgets call this on mount.
+   *
+   * The catch, and the reason for the guard: mounting a widget is NOT a user gesture.
+   * Building the context here on a cold page creates a suspended AudioContext for every
+   * visitor of every lesson, including the ones who never play a note — which is exactly
+   * what context.ts says not to do, and which browsers rightly complain about.
+   *
+   * So this is a no-op until something has genuinely unlocked audio. The first pointerdown
+   * pays the construction cost once; from then on — every later lesson, every remount across
+   * a route change — the graph already exists and this warms it for free, which is when the
+   * latency actually matters.
    */
   prepare(): void {
+    if (!hasContext()) return
     this.ensure()
   }
 
@@ -231,6 +242,17 @@ let instance: Player | undefined
 /** The one player for the page. Lazily constructed; creates no AudioContext until something
  *  actually asks for a sound. */
 export function player(): Player {
-  if (!instance) instance = new Player()
+  if (!instance) {
+    instance = new Player()
+    // A handle on the real singleton, in dev only.
+    //
+    // Not a convenience: importing this module from a console gives a DIFFERENT instance,
+    // because Vite serves hot-updated modules under a `?t=` URL and a fresh import resolves
+    // to its own copy. Debugging audio through that copy is worse than useless — it reports
+    // a healthy context and a silent app, and both are true of different objects.
+    if (import.meta.env.DEV) {
+      ;(globalThis as { __tuneup?: Player }).__tuneup = instance
+    }
+  }
   return instance
 }
