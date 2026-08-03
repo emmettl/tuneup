@@ -1,0 +1,99 @@
+.chord-player {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.chord-player-bars {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chord-player-slot { position: relative; }
+
+.chord-card {
+  font: inherit;
+  min-width: 74px;
+  padding: 12px 10px;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  border-radius: 9px;
+  border: 1px solid var(--panel-edge);
+  background: #16102b;
+  color: var(--ink);
+  cursor: default;
+  touch-action: none;
+}
+
+.chord-card.is-editable { cursor: pointer; border-style: dashed; }
+.chord-card.is-editable:hover { border-color: var(--root); }
+
+/* The bar currently sounding. Amber, and it moves — the only thing on screen that does. */
+.chord-card.is-live {
+  border-color: var(--root);
+  background: linear-gradient(#2a1f10, #3a2a12);
+  box-shadow: 0 0 16px rgba(255, 176, 46, 0.28);
+}
+
+.chord-card-numeral {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+
+.chord-card-name {
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+}
+
+.chord-card.is-live .chord-card-name { color: var(--root); }
+
+.chord-picker {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 6px);
+  left: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: max-content;
+  max-width: 240px;
+  padding: 8px;
+  border-radius: 9px;
+  border: 1px solid var(--panel-edge);
+  background: var(--bg-raised);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.chord-picker-option {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--panel-edge);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: none;
+}
+
+.chord-picker-option.is-on { background: var(--root); color: #241a08; border-color: var(--root); }
+
+.chord-player-transport {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.chord-player-hint { font-size: 0.75rem; color: var(--ink-dim); }
+
+@media (prefers-reduced-motion: reduce) {
+  .chord-card { transition: none; }
+  /* The live bar still has to be identifiable — only the glow goes. */
+  .chord-card.is-live { box-shadow: inset 0 0 0 2px var(--root); }
+}

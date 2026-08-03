@@ -1,0 +1,92 @@
+/*
+  The pitch clock. An instrument, so it wears the dark panel look.
+*/
+
+.pitch-clock {
+  display: block;
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 50%;
+  /* As on the keyboard: a drag across the ring must rotate it, not scroll the page. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: contain;
+}
+
+.pitch-clock-segment {
+  fill: #16102b;
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 1;
+  transition: fill var(--decay) ease-out;
+  cursor: pointer;
+}
+
+/* Same fixed grammar as everywhere else on the site. */
+.pitch-clock-segment[data-role='root'] { fill: var(--root); }
+.pitch-clock-segment[data-role='scale'] { fill: #6b5fa8; }
+.pitch-clock-segment[data-role='third'] { fill: var(--third); }
+.pitch-clock-segment[data-role='fifth'] { fill: var(--fifth); }
+.pitch-clock-segment[data-role='seventh'] { fill: var(--seventh); }
+.pitch-clock-segment[data-role='blue'] { fill: var(--blue); }
+.pitch-clock-segment[data-role='outside'] { fill: #16102b; }
+
+.pitch-clock-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  fill: var(--ink-dim);
+  pointer-events: none;
+}
+
+.pitch-clock-label[data-role='root'],
+.pitch-clock-label[data-role='third'],
+.pitch-clock-label[data-role='fifth'],
+.pitch-clock-label[data-role='blue'] {
+  fill: #1b1430;
+  font-weight: 600;
+}
+
+.pitch-clock-label[data-role='scale'],
+.pitch-clock-label[data-role='seventh'] {
+  fill: #f4f0ff;
+}
+
+.pitch-clock-label[data-role='outside'] { fill: var(--outside); }
+
+/* Home is a SHAPE, not a colour. Which note is home is the most important thing the ring
+   says, and it has to survive not being able to see the amber — or colour at all. */
+.pitch-clock-home {
+  fill: #241a08;
+  stroke: #241a08;
+  stroke-width: 1;
+}
+
+/* The halo makes the marker a target rather than a decoration. It is the thing the modes and
+   relative-minor lessons ask you to drag, and a bare 12px triangle at the rim does not read
+   as grabbable at any size. */
+.pitch-clock-home-halo {
+  fill: rgba(255, 255, 255, 0.9);
+  stroke: var(--root);
+  stroke-width: 2;
+}
+
+.pitch-clock-home-group.is-draggable { cursor: grab; }
+.pitch-clock-home-group.is-draggable:active { cursor: grabbing; }
+
+.pitch-clock-centre {
+  font-family: var(--font-display);
+  font-size: 20px;
+  fill: var(--ink);
+}
+
+.pitch-clock-centre-sub {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  fill: var(--ink-dim);
+  letter-spacing: 0.06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pitch-clock-segment { transition: none; }
+}

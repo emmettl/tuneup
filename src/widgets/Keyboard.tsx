@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { player, type InstrumentId } from '../audio/index.js'
+import { capturePointer } from './capture.js'
 import { useSoundingDom } from '../ui/useSounding.js'
 import {
   type KeyBox,
@@ -140,7 +141,7 @@ export default function Keyboard({
     if (midi === null) return
     // Capture, so a drag that leaves the element still reports moves here — otherwise a
     // glissando off the edge leaves the last note droning with no event to release it.
-    event.currentTarget.setPointerCapture(event.pointerId)
+    capturePointer(event.currentTarget, event.pointerId)
     held.current.set(event.pointerId, midi)
     start(midi)
   }
