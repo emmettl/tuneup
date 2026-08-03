@@ -15,6 +15,9 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      # The browser project renders audio through a real OfflineAudioContext, which is the
+      # only way to answer whether a voice is audible, clipping, or level with the others.
+      - run: npx playwright install --with-deps chromium
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run coverage

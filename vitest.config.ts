@@ -1,3 +1,4 @@
+import { playwright } from '@vitest/browser-playwright'
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
@@ -22,21 +23,27 @@ export default defineConfig({
           exclude: ['**/node_modules/**', '**/dist/**', '**/*.browser.test.*'],
         },
       },
-      // A second `browser` project joins this list once there are enough instruments to
-      // compare — it is the only way to answer the questions that actually matter about
-      // synthesised audio (is one voice ten times louder than another, does an envelope ever
-      // reach silence, does an exponential ramp throw), because those need a real
-      // OfflineAudioContext to render. Deliberately not paid for yet: it costs a Chromium
-      // download in CI, and there is nothing to measure until the patches exist.
-      //
-      //   {
-      //     test: {
-      //       name: 'browser',
-      //       include: ['src/**/*.browser.test.ts'],
-      //       browser: { enabled: true, provider: playwright(), headless: true,
-      //                  instances: [{ browser: 'chromium' }] },
-      //     },
-      //   },
+      {
+        test: {
+          name: 'browser',
+          include: ['src/**/*.browser.test.ts'],
+          // Real Chromium, because these are the questions that cannot be answered anywhere
+          // else: is a voice audible, is it clipping, is one instrument ten times louder than
+          // another, does an envelope ever reach silence. All of those are numbers once the
+          // graph has been rendered, and only an OfflineAudioContext can render it.
+          //
+          // Note the `exclude` on the node project above — `.browser.test.ts` matches its
+          // include pattern too, and that exclude is the only thing keeping them apart.
+          browser: {
+            enabled: true,
+            provider: playwright({
+              launchOptions: { executablePath: process.env.TUNEUP_CHROMIUM },
+            }),
+            headless: true,
+            instances: [{ browser: 'chromium' }],
+          },
+        },
+      },
     ],
   },
 })
