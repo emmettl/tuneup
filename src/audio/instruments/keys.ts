@@ -68,7 +68,7 @@ export const RHODES: PatchSpec = {
   velocityBrightness: 1.4,
   decayTracking: 0.55,
   spread: 3,
-  trim: 0.53,
+  trim: 0.54,
   reverbSend: 0.18,
   sustained: false,
 }
@@ -106,7 +106,7 @@ export const PIANO: PatchSpec = {
   velocityBrightness: 1.6,
   decayTracking: 0.75,
   spread: 4,
-  trim: 0.42,
+  trim: 0.43,
   reverbSend: 0.14,
   sustained: false,
 }
@@ -128,7 +128,7 @@ export const ORGAN: PatchSpec = {
   velocityBrightness: 0.4,
   decayTracking: 0,
   spread: 2,
-  trim: 0.17,
+  trim: 0.56,
   reverbSend: 0.2,
   sustained: true,
 }
@@ -146,7 +146,7 @@ export const PAD: PatchSpec = {
   velocityBrightness: 0.9,
   decayTracking: 0,
   spread: 6,
-  trim: 0.25,
+  trim: 1.21,
   reverbSend: 0.42,
   sustained: true,
 }
@@ -162,7 +162,7 @@ export const BASS: PatchSpec = {
   velocityBrightness: 1.8,
   decayTracking: 0.2,
   spread: 2,
-  trim: 0.41,
+  trim: 0.38,
   reverbSend: 0.04,
   sustained: false,
 }
@@ -183,7 +183,7 @@ export const SUB: PatchSpec = {
   velocityBrightness: 0.8,
   decayTracking: 0.15,
   spread: 1,
-  trim: 0.26,
+  trim: 0.50,
   reverbSend: 0.02,
   sustained: false,
 }
@@ -208,7 +208,7 @@ export const GUITAR: PatchSpec = {
   velocityBrightness: 1.5,
   decayTracking: 0.45,
   spread: 5,
-  trim: 0.30,
+  trim: 0.61,
   reverbSend: 0.16,
   sustained: false,
 }
@@ -225,7 +225,7 @@ export const SAW: PatchSpec = {
   velocityBrightness: 1.5,
   decayTracking: 0.1,
   spread: 8,
-  trim: 0.34,
+  trim: 0.40,
   reverbSend: 0.24,
   sustained: false,
 }
@@ -242,7 +242,7 @@ export const PLUCK: PatchSpec = {
   velocityBrightness: 1.3,
   decayTracking: 0.5,
   spread: 4,
-  trim: 0.69,
+  trim: 0.76,
   reverbSend: 0.22,
   sustained: false,
 }

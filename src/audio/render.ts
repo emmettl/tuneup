@@ -29,8 +29,15 @@ export interface VoiceHandle {
 function applyEnvelope(param: AudioParam, amp: AdsrSpec, peak: number, at: number): number {
   const attackEnd = at + amp.attack
   param.cancelScheduledValues(at)
-  param.setValueAtTime(SILENCE, at)
-  param.exponentialRampToValueAtTime(Math.max(SILENCE, peak), attackEnd)
+  // The attack is LINEAR and starts at true zero. An exponential ramp cannot start at zero,
+  // so it has to start at SILENCE — and an exponential from 1e-4 to full spends almost all of
+  // its time near the bottom and then turns a corner, which is an audible tick at the very
+  // start of every note. Linear from silence has no corner and no floor to jump up from.
+  //
+  // Decay and release stay exponential below, where the curve shape is what makes a fade
+  // sound natural rather than like it hangs and then drops off a cliff.
+  param.setValueAtTime(0, at)
+  param.linearRampToValueAtTime(Math.max(SILENCE, peak), attackEnd)
 
   if (amp.sustain > 0) {
     if (amp.decay > 0) {
@@ -49,6 +56,34 @@ function applyEnvelope(param: AudioParam, amp: AdsrSpec, peak: number, at: numbe
   param.exponentialRampToValueAtTime(SILENCE, decayEnd)
   param.setValueAtTime(0, decayEnd)
   return decayEnd
+}
+
+/**
+ * Begin a release at a scheduled time, fading from wherever the envelope actually is.
+ *
+ * `param.value` is the WRONG thing to read here, and reading it was a real bug. It reports the
+ * parameter's value *now*, not its value at `when` — so releasing a note a tenth of a second
+ * in the future read the level at time zero, which is silence, and then `setValueAtTime` slammed
+ * the gain from full to 1e-4 in a single sample. Measured as a 0.28 step discontinuity, heard
+ * as a click on every note; in a scale, the click landed exactly where the next note started,
+ * so it sounded like each note began with a tick.
+ *
+ * `cancelAndHoldAtTime` is the API for precisely this: it discards later automation but holds
+ * whatever value the curve had reached at that instant, so the fade starts from the real level.
+ * The fallback path is only reached on browsers without it, where reading `.value` is still
+ * wrong but is the best available — and there it is at least correct for an immediate release,
+ * which is what `kill` and a pointer-up actually do.
+ */
+function startRelease(param: AudioParam, when: number, end: number): void {
+  const holdable = param as AudioParam & { cancelAndHoldAtTime?: (time: number) => void }
+  if (typeof holdable.cancelAndHoldAtTime === 'function') {
+    holdable.cancelAndHoldAtTime(when)
+  } else {
+    param.cancelScheduledValues(when)
+    param.setValueAtTime(Math.max(SILENCE, param.value), when)
+  }
+  param.exponentialRampToValueAtTime(SILENCE, end)
+  param.setValueAtTime(0, end)
 }
 
 function applyFilterEnvelope(filter: BiquadFilterNode, spec: FilterSpec, at: number): void {
@@ -213,12 +248,7 @@ export function renderVoice(
     const release = plan.operators.reduce((most, op) => Math.max(most, op.amp.release), 0.05)
     const end = when + release
     for (const gain of gains) {
-      gain.gain.cancelScheduledValues(when)
-      // From wherever the envelope actually is right now, so releasing a note mid-attack
-      // fades from that level rather than jumping to full and then fading.
-      gain.gain.setValueAtTime(Math.max(SILENCE, gain.gain.value), when)
-      gain.gain.exponentialRampToValueAtTime(SILENCE, end)
-      gain.gain.setValueAtTime(0, end)
+      startRelease(gain.gain, when, end)
     }
     stopAll(end + 0.02)
     return end

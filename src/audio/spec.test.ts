@@ -31,11 +31,16 @@ describe('the patches themselves', () => {
   })
 
   it('keeps every trim somewhere sane, so no instrument buries another', () => {
-    // Measured properly in the browser pass; this only catches an order-of-magnitude slip,
-    // which is the failure that actually happens when a patch is added in a hurry.
+    // Measured properly against an offline render; this only catches an order-of-magnitude
+    // slip, which is the failure that actually happens when a patch is added in a hurry.
+    //
+    // The ceiling is above 1 deliberately. Trim is an output gain applied to a sum of
+    // operator gains that are themselves well under 1 — the pad is three quiet detuned saws
+    // and genuinely needs more than unity to sit level with the electric piano. Capping at 1
+    // would force the balance to be faked somewhere less visible.
     for (const id of INSTRUMENT_IDS) {
       expect(PATCHES[id].trim, id).toBeGreaterThan(0.1)
-      expect(PATCHES[id].trim, id).toBeLessThanOrEqual(1)
+      expect(PATCHES[id].trim, id).toBeLessThanOrEqual(2)
     }
   })
 

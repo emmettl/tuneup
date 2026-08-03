@@ -31,8 +31,8 @@ export const DRUM_NAMES: Record<DrumId, string> = {
 
 /** Measured relative to each other so nothing buries anything else. */
 const TRIM: Record<DrumId, number> = {
-  kick: 0.62,
-  snare: 0.29,
+  kick: 0.45,
+  snare: 0.25,
   clap: 1.1,
   hat: 0.22,
   openhat: 0.2,
