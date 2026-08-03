@@ -12,6 +12,7 @@ import { probe, type ProbeReport } from './audio/probe.js'
 import { key, midiOf, note, progressionById, progressionChords, scalePitches } from './theory/index.js'
 import { voiceProgression } from './theory/voicing.js'
 import Keyboard from './widgets/Keyboard.tsx'
+import AudioStatus from './ui/AudioStatus.tsx'
 import { scaleNotes } from './theory/scale.js'
 import { chordNotes, chord as parseChordText } from './theory/chord.js'
 import { callOut, chordHighlights } from './widgets/highlight.js'
@@ -83,6 +84,10 @@ export default function App() {
       <p style={{ color: 'var(--ink-dim)', marginTop: 4 }}>
         Scratch bench — phase 2. Does the synth sound like an instrument?
       </p>
+
+      <Section title="Sound check">
+        <AudioStatus />
+      </Section>
 
       <Section title="Instrument">
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>

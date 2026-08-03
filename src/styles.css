@@ -131,3 +131,68 @@ code {
     transition-duration: 0.01ms !important;
   }
 }
+
+/*
+  The audio-status panel.
+
+  Deliberately visible rather than tucked away. "I can't hear anything" is the least
+  diagnosable failure a browser instrument has — a muted tab, a disconnected output device and
+  a context that never got a gesture all look identical from inside the page — so the state is
+  shown rather than assumed.
+*/
+.audio-status {
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: var(--bg-raised);
+}
+
+.audio-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.audio-status-row + .audio-status-row {
+  margin-top: 10px;
+}
+
+.audio-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--outside);
+  flex: none;
+}
+
+.audio-dot.is-running { background: var(--fifth); box-shadow: 0 0 8px var(--fifth); }
+.audio-dot.is-suspended,
+.audio-dot.is-none { background: var(--root); }
+.audio-dot.is-closed { background: var(--third); }
+
+.audio-status-button {
+  font: inherit;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--panel-edge);
+  touch-action: none;
+}
+
+.audio-status-note,
+.audio-status-detail {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}
+
+.audio-status-detail {
+  font-size: 11px;
+  word-break: break-word;
+}

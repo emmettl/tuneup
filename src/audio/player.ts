@@ -62,6 +62,12 @@ export class Player {
     return this.master?.analyser ?? null
   }
 
+  /** The dry bus, exposed so the audio-status panel can inject a test tone through the real
+   *  master chain. Nothing in the app should route audio by hand — use `play` and friends. */
+  get busForTesting(): AudioNode | null {
+    return this.master?.bus ?? null
+  }
+
   /**
    * The audio clock.
    *
