@@ -141,7 +141,7 @@ describe('transposing', () => {
     // G sharp up a major third is B sharp, not C. In G sharp major that is the correct
     // spelling and softening it to C would break the key signature.
     expect(noteName(transpose(note('G#4'), interval('M3')))).toBe('B♯')
-    expect(noteName(transpose(note('F#4'), interval('A2')))).toBe('G' + '\u{1D12A}')
+    expect(noteName(transpose(note('F#4'), interval('A2')))).toBe('G♯♯')
   })
 
   it('round-trips against `between` for every letter and every interval', () => {

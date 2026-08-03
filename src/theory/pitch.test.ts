@@ -111,7 +111,7 @@ describe('enharmonics', () => {
     const names = enharmonics(note('C#4')).map((n) => noteName(n, { octave: true }))
     expect(names).toContain('D♭4')
     expect(names).toContain('C♯4')
-    expect(names).toContain('B\u{1D12A}3')
+    expect(names).toContain('B♯♯3')
   })
 
   it('keeps every alternative at the same sounding pitch', () => {

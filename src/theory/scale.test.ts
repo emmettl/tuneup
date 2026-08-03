@@ -55,7 +55,7 @@ describe('spelling', () => {
   })
 
   it('produces the double sharps F sharp major genuinely needs further round the circle', () => {
-    expect(names('G#', 'major')).toEqual(['G♯', 'A♯', 'B♯', 'C♯', 'D♯', 'E♯', 'F\u{1D12A}'])
+    expect(names('G#', 'major')).toEqual(['G♯', 'A♯', 'B♯', 'C♯', 'D♯', 'E♯', 'F♯♯'])
   })
 
   it('spells the pentatonics with the missing letters actually missing', () => {

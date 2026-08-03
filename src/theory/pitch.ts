@@ -159,17 +159,17 @@ export function note(text: string): Spelled {
  * an object literal has to be quoted — at which point it is a string pretending to be a
  * number and the type only agrees by coincidence.
  *
- * The double sharp is U+1D12A, which is outside the BMP and so is a surrogate pair. Written
- * as an escape rather than pasted so it survives any editor or terminal that mangles
- * astral-plane characters — which is how it got corrupted the first time.
+ * The doubles are written as TWO ordinary glyphs — ♯♯ and ♭♭ — rather than as the dedicated
+ * U+1D12A/U+1D12B characters. Those are the typographically correct answer and the wrong
+ * practical one: they sit outside the BMP, and font coverage for them is thin enough that a
+ * learner on the wrong device sees a tofu box where a note name should be. Doubling renders
+ * everywhere and reads unambiguously.
+ *
+ * `parseNote` still accepts the dedicated characters, so pasted notation round-trips.
  */
 function accidentalGlyphs(alter: number, unicode: boolean): string {
   if (alter === 0) return ''
-  if (unicode) {
-    if (alter === 2) return '\u{1D12A}'
-    if (alter === -2) return '\u{1D12B}'
-    return alter > 0 ? '♯'.repeat(alter) : '♭'.repeat(-alter)
-  }
+  if (unicode) return alter > 0 ? '♯'.repeat(alter) : '♭'.repeat(-alter)
   if (alter === 2) return 'x'
   return alter > 0 ? '#'.repeat(alter) : 'b'.repeat(-alter)
 }
