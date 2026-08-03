@@ -9,7 +9,11 @@
     "target": "es2023",
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "module": "esnext",
-    "types": ["vite/client"],
+    // "node" is here for the tests that live under src/ and read the source tree —
+    // architecture.test.ts and, later, the lesson-registry test. They run in Vitest's node
+    // environment and need node:fs. Application code must not import node built-ins; nothing
+    // enforces that beyond review, because a bundler error is the immediate consequence.
+    "types": ["vite/client", "node"],
     "skipLibCheck": true,
 
     /* Bundler mode */
