@@ -1,0 +1,140 @@
+/*
+  The keyboard.
+
+  A dark glowing panel, per the site's grammar: this is something you play, so it looks like an
+  instrument rather than like the page around it.
+*/
+
+.keyboard {
+  position: relative;
+  width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  overflow: hidden;
+  /* All four are load-bearing on touch, and each fixes a different thing:
+     touch-action stops a drag across the keys scrolling the page instead of playing them;
+     user-select stops a slow drag selecting the labels;
+     the tap highlight is a grey box Safari paints over anything tapped, which on a piano key
+     looks like the app malfunctioning;
+     overscroll-behavior stops a drag past the edge rubber-banding the whole page on iOS. */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: contain;
+}
+
+.keyboard-key {
+  position: absolute;
+  top: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  /* The keys never receive pointer events themselves. Hit testing is done in JS against the
+     pure geometry, because a drag has to know which key it moved ONTO — and elementFromPoint
+     is both slower and wrong once anything is inside a CSS transform. */
+  pointer-events: none;
+  transition:
+    background var(--decay) ease-out,
+    box-shadow var(--decay) ease-out;
+}
+
+.keyboard-key:focus-visible {
+  pointer-events: auto;
+}
+
+.keyboard-key.is-white {
+  background: linear-gradient(#f3f0ff, #d9d3f0);
+  border-right: 1px solid rgba(16, 11, 28, 0.35);
+  border-radius: 0 0 4px 4px;
+  color: #2a2140;
+  z-index: 1;
+}
+
+.keyboard-key.is-black {
+  background: linear-gradient(#2a2340, #120d20);
+  border-radius: 0 0 3px 3px;
+  color: var(--ink-dim);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+  z-index: 2;
+}
+
+.keyboard-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  padding-bottom: 7px;
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+.keyboard-key.is-black .keyboard-label {
+  padding-bottom: 5px;
+}
+
+/*
+  Scale and chord colouring.
+
+  Each hue has one fixed musical meaning everywhere on the site — see styles.css. A learner who
+  picked them up in the chords chapter can read a keyboard six chapters later without being
+  told, which is teaching through the design system rather than through prose.
+
+  Colour is never the only channel: `data-role` also drives the aria-label ("E4, the third"),
+  so the same information reaches someone who cannot see or cannot hear it.
+*/
+.keyboard-key[data-role='root'] { background: linear-gradient(var(--root), #d98d18); color: #2a2140; }
+.keyboard-key[data-role='third'] { background: linear-gradient(var(--third), #d95bb3); color: #2a2140; }
+.keyboard-key[data-role='fifth'] { background: linear-gradient(var(--fifth), #35c7a8); color: #12321f; }
+.keyboard-key[data-role='seventh'] { background: linear-gradient(var(--seventh), #6a5cd6); color: #f2efff; }
+.keyboard-key[data-role='blue'] { background: linear-gradient(var(--blue), #219fc4); color: #0d2733; }
+.keyboard-key[data-role='scale'] { background: linear-gradient(#cdc4f2, #a99ddb); color: #2a2140; }
+
+.keyboard-key.is-black[data-role='scale'] {
+  background: linear-gradient(#6b5fa8, #4a3f7d);
+  color: #efeaff;
+}
+
+/*
+  Sounding. Written straight onto the DOM by useSoundingDom from a rAF loop — no React render
+  — and driven by the AUDIO CLOCK rather than by when the note was scheduled, so the light is
+  on the note you can hear rather than up to a lookahead window ahead of it.
+*/
+.keyboard-key[data-sounding] {
+  background: linear-gradient(#fffdf6, var(--root));
+  box-shadow:
+    0 0 18px rgba(255, 176, 46, 0.55),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+  transform: translateY(1px);
+  transition: none;
+}
+
+.keyboard-key.is-black[data-sounding] {
+  background: linear-gradient(var(--root), #b8700d);
+  color: #2a2140;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The glow goes; the state change stays. Which key is sounding is information, not
+     decoration, so it must survive — only the movement and the bloom are dropped. */
+  .keyboard-key {
+    transition: none;
+  }
+
+  .keyboard-key[data-sounding] {
+    transform: none;
+    box-shadow: inset 0 0 0 2px var(--ink);
+  }
+}
+
+@media (max-width: 560px) {
+  .keyboard-label {
+    font-size: 9px;
+    padding-bottom: 4px;
+  }
+}

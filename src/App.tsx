@@ -11,6 +11,10 @@ import { DRUM_IDS, DRUM_NAMES } from './audio/instruments/kit.js'
 import { probe, type ProbeReport } from './audio/probe.js'
 import { key, midiOf, note, progressionById, progressionChords, scalePitches } from './theory/index.js'
 import { voiceProgression } from './theory/voicing.js'
+import Keyboard from './widgets/Keyboard.tsx'
+import { scaleNotes } from './theory/scale.js'
+import { chordNotes, chord as parseChordText } from './theory/chord.js'
+import { callOut, chordHighlights } from './widgets/highlight.js'
 
 export default function App() {
   const [instrument, setInstrument] = useState<InstrumentId>('rhodes')
@@ -54,6 +58,17 @@ export default function App() {
       if (index % 8 === 4) player().drum('clap', { at })
       if (index % 2 === 1) player().drum('hat', { at, velocity: index % 4 === 1 ? 0.7 : 0.45 })
     }
+  }
+
+  // Deliberately slow. At 130bpm a highlight driven by the SCHEDULER rather than by the audio
+  // clock looks almost right; at 50bpm it runs a visible fraction of a beat ahead of the
+  // sound, which is the whole reason sounding.ts works the way it does.
+  const slowArpeggio = (root: number) => {
+    const origin = player().now()
+    const step = 60 / 50
+    ;[0, 4, 7, 12, 7, 4].forEach((semitones, index) => {
+      player().play(root + semitones, { at: origin + index * step, duration: step * 0.9 })
+    })
   }
 
   const runProbe = async () => {
@@ -104,20 +119,36 @@ export default function App() {
         </div>
       </Section>
 
-      <Section title="Keys">
-        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-          {[60, 62, 64, 65, 67, 69, 71, 72].map((midi) => (
-            <button
-              key={midi}
-              style={chip(false)}
-              onPointerDown={play(() => player().hold(midi))}
-              onPointerUp={() => player().release(midi)}
-              onPointerLeave={() => player().release(midi)}
-            >
-              {midi}
-            </button>
-          ))}
+      <Section title="Keyboard">
+        <Keyboard range={[60, 84]} scale={{ key: key('C'), id: 'major' }} labels="note" keys />
+        <p style={{ color: 'var(--ink-dim)', fontSize: 13, marginTop: 8 }}>
+          Click, drag across for a glissando, or use the computer keyboard (home row = white
+          keys). Coloured by scale degree: amber root, pink third, mint fifth.
+        </p>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 10 }}>
+          <button style={chip(false)} onPointerDown={play(() => slowArpeggio(60))}>
+            Slow arpeggio at 50bpm (check the lights track the sound)
+          </button>
         </div>
+      </Section>
+
+      <Section title="Chord highlight">
+        <Keyboard
+          range={[60, 84]}
+          highlight={chordHighlights(chordNotes(parseChordText('Cmaj7')))}
+          labels="note"
+          height={120}
+        />
+      </Section>
+
+      <Section title="The blues scale, with the blue note called out">
+        <Keyboard
+          range={[57, 81]}
+          scale={{ key: key('A minor'), id: 'blues' }}
+          highlight={[callOut(scaleNotes(note('A'), 'blues')[3]!, 'blue')]}
+          labels="note"
+          height={120}
+        />
       </Section>
 
       <Section title="Drums">
