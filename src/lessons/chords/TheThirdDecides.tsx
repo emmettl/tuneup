@@ -1,9 +1,19 @@
 import { useState } from 'react'
-import { Aside, Check, Control, Controls, Headline, Lesson, Say, Try } from '../../ui/lesson/index.js'
+import {
+  Aside,
+  Check,
+  Control,
+  Controls,
+  Headline,
+  Lesson,
+  Notation,
+  Say,
+  Try,
+} from '../../ui/lesson/index.js'
 import Keyboard from '../../widgets/Keyboard.tsx'
 import { chordHighlights } from '../../widgets/highlight.js'
 import { player } from '../../audio/index.js'
-import { chord, chordNotes, chordSymbol, midiOf, noteName } from '../../theory/index.js'
+import { chord, chordNotes, chordSymbol, key, midiOf, noteName } from '../../theory/index.js'
 
 // Wow moment: the third decides.
 //
@@ -52,6 +62,7 @@ export default function TheThirdDecides() {
         <p className="mono" style={{ fontSize: 13, color: 'var(--ink-dim)', margin: 0 }}>
           {chordSymbol(spec)} — {notes.map((note) => noteName(note)).join('  ')}
         </p>
+        <Notation notes={notes} musicKey={key('C')} chord label={chordSymbol(spec)} />
       </Try>
 
       <Say>

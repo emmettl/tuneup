@@ -156,3 +156,8 @@
   color: #241a08;
   font-weight: 600;
 }
+
+.lesson-notation {
+  margin: 0.9rem 0 0;
+  overflow-x: auto;
+}

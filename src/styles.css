@@ -345,3 +345,27 @@ code {
 }
 
 a { color: var(--root); }
+
+.settings {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.settings-toggle input { accent-color: var(--root); width: 16px; height: 16px; }
+
+.settings-note { font-size: 0.78rem; color: var(--ink-dim); }

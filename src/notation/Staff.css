@@ -1,0 +1,26 @@
+/* Paper, not panel: notation is something you READ, so it follows the page's grammar rather
+   than the instruments'. */
+.staff {
+  display: block;
+  background: #faf7f2;
+  border: 1px solid var(--panel-edge);
+  border-radius: 8px;
+  padding: 4px;
+  max-width: 100%;
+  height: auto;
+}
+
+.staff-line { stroke: #45405a; stroke-width: 1; }
+.staff-head { fill: #14101f; }
+.staff-stem { stroke: #14101f; stroke-width: 1.4; }
+
+.staff-clef {
+  font-size: 42px;
+  fill: #14101f;
+  dominant-baseline: middle;
+}
+
+.staff-accidental {
+  font-size: 17px;
+  fill: #14101f;
+}

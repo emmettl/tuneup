@@ -3,6 +3,7 @@ import Home from './pages/Home.tsx'
 import LessonPage from './pages/LessonPage.tsx'
 import { Link } from './ui/Link.tsx'
 import AudioStatus from './ui/AudioStatus.tsx'
+import Settings from './ui/Settings.tsx'
 import './ui/lesson/lesson.css'
 
 export default function App() {
@@ -27,6 +28,7 @@ export default function App() {
         )}
       </main>
       <footer className="site-footer">
+        <Settings />
         <AudioStatus />
       </footer>
     </>

@@ -1,7 +1,7 @@
-import { Aside, Check, Headline, Lesson, Say, Try } from '../../ui/lesson/index.js'
+import { Aside, Check, Headline, Lesson, Notation, Say, Try } from '../../ui/lesson/index.js'
 import PitchClock from '../../widgets/PitchClock.tsx'
 import Keyboard from '../../widgets/Keyboard.tsx'
-import { key } from '../../theory/index.js'
+import { key, scaleNotes } from '../../theory/index.js'
 
 export default function SevenFromTwelve() {
   const c = key('C')
@@ -28,6 +28,7 @@ export default function SevenFromTwelve() {
 
       <Try caption="The same seven notes on a keyboard. In C they are the white keys — which is a coincidence of C, not a rule.">
         <Keyboard range={[60, 84]} scale={{ key: c, id: 'major' }} labels="degree" keys />
+        <Notation notes={scaleNotes(c.tonic, 'major')} musicKey={c} label="C major scale" />
       </Try>
 
       <Check
