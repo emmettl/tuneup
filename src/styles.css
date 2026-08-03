@@ -1,0 +1,133 @@
+/*
+  tuneup's design tokens.
+
+  The idea the whole visual language rests on: "the studio at night, with the lights on."
+  Instruments are near-black glowing panels; the page around them is a lighter, warmer,
+  readable surface. That gives one grammar a learner picks up without being told —
+  GLOWING DARK PANEL = something you can play, CALM SURFACE = something you read.
+
+  Deliberately NOT inherited from driftbox, which is 12px letterspaced monospace on a body
+  with overflow:hidden. That is right for an instrument glanced at in a dark room and hostile
+  for a site with paragraphs that scrolls and gets read in daylight.
+*/
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --bg: #100b1c;
+  --bg-raised: #191230;
+  --panel: #07040f;
+  --panel-edge: rgba(255, 255, 255, 0.09);
+  --ink: #ece8ff;
+  --ink-dim: #a79ecd;
+
+  /*
+    Functional hues. Each has ONE fixed musical meaning and it is never broken anywhere in
+    the app — not in the keyboard, not on the fretboard, not in a chord badge in the prose.
+
+    This is the cheapest teaching in the project: a learner who has internalised the chord
+    chapter can look at a fretboard six chapters later and read it without being told what
+    the colours mean. It only works if it is absolute, and it is expensive to retrofit, which
+    is why it is decided here on day one rather than when the first widget wants a colour.
+  */
+  --root: #ffb02e; /* amber  — tonic / root / home */
+  --third: #ff7ad9; /* pink   — the third: chord quality lives here */
+  --fifth: #5ff0d0; /* mint   — the fifth: stability */
+  --seventh: #8b7dff; /* violet — sevenths and extensions */
+  --blue: #4ad6ff; /* cyan   — the blue note, and chords borrowed from outside the key */
+  --outside: #58507a; /* grey   — not in the current scale */
+
+  /* Type. Monospace is RESERVED for musical data — note names, numerals, step numbers, BPM,
+     frequencies. That reservation is itself a teaching signal: mono means "this is a musical
+     fact". Prose never uses it. */
+  --font-display: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-body: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'SFMono-Regular', ui-monospace, Menlo, monospace;
+
+  /* Motion. --decay must match the amplitude release of the instruments in src/audio; a key
+     that stops glowing before it stops sounding reads as a dropped note. */
+  --step: 120ms;
+  --decay: 400ms;
+
+  --radius: 10px;
+  --gap: 16px;
+}
+
+/*
+  Light mode: the page becomes paper, the instruments stay dark. Glowing objects on a desk,
+  which reads as deliberate rather than as an unfinished theme — and it is the mode a lot of
+  actual learning happens in, on a laptop in daylight.
+*/
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg: #faf7f2;
+    --bg-raised: #ffffff;
+    --ink: #1b1430;
+    --ink-dim: #5d5478;
+    --panel-edge: rgba(0, 0, 0, 0.12);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  /* Safari paints a grey box over anything you tap, which on a piano key looks like the app
+     is malfunctioning. */
+  -webkit-tap-highlight-color: transparent;
+  /* No rubber-banding: a drag that starts on a key and continues past the edge would
+     otherwise bounce the whole page on iOS. */
+  overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Musical data, everywhere it appears. */
+.mono,
+kbd,
+code {
+  font-family: var(--font-mono);
+  font-variant-ligatures: none;
+}
+
+:focus-visible {
+  /* Must survive on both the near-black panels and the light page, so it is drawn in the
+     root hue rather than in currentColor. */
+  outline: 2px solid var(--root);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* Glow pulses and slides go; note-on and playhead state changes stay, because those carry
+     information rather than decoration. Individual components handle that distinction —
+     this is only the blanket removal of duration. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

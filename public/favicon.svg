@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#100b1c" />
+  <!-- Three note-pills in root/third/fifth order: the app's colour grammar, at 16px. -->
+  <rect x="7" y="20" width="18" height="4.5" rx="2.25" fill="#ffb02e" />
+  <rect x="7" y="13.75" width="18" height="4.5" rx="2.25" fill="#ff7ad9" />
+  <rect x="7" y="7.5" width="18" height="4.5" rx="2.25" fill="#5ff0d0" />
+</svg>

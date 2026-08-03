@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <!-- viewport-fit=cover lets the instruments reach into the notch, which is paid for with
+         env(safe-area-inset-*) on everything that has to stay reachable — in landscape the
+         lowest keys otherwise sit behind the home indicator. interactive-widget stops iOS
+         shoving the layout up when a keyboard appears over a text field. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="theme-color" content="#100b1c" />
+
+    <title>tuneup — music theory you can play with</title>
+    <meta
+      name="description"
+      content="Learn music theory by playing with it. Scales, keys and chords through to the blues, rock and electronica — every example is playable, and every sound is synthesised in the browser."
+    />
+
+    <!--
+      Link previews.
+
+      WhatsApp, iMessage, Slack and Signal all read Open Graph and none of them run
+      JavaScript, so every tag here has to be in the static HTML rather than set by the app at
+      runtime. That is why they live in index.html and not in a component.
+
+      The URLs are absolute and hardcoded to the GitHub Pages deployment, deliberately, and
+      they are the one place `base: './'` does not reach. A relative og:image is the single
+      most common reason a preview comes back blank: crawlers do not resolve them against the
+      page. Hardcoding also keeps the card correct when the app is served from somewhere else,
+      where pointing at the canonical public copy is the only useful answer.
+
+      Note that lessons live in the URL *hash*, which is never sent to a server and is ignored
+      by every crawler, so a shared lesson link shows this same card rather than that lesson's.
+      That is the accepted trade for hash routing; see the plan for the per-lesson HTML entry
+      that would fix it if it ever matters.
+    -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="tuneup" />
+    <meta property="og:title" content="tuneup — music theory you can play with" />
+    <meta
+      property="og:description"
+      content="Learn music theory by playing with it. Scales, keys and chords through to the blues, rock and electronica — every example is playable, and every sound is synthesised in the browser."
+    />
+    <meta property="og:url" content="https://emmettl.github.io/tuneup/" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:image" content="https://emmettl.github.io/tuneup/og.png" />
+    <!-- WhatsApp looks for the https variant specifically. -->
+    <meta property="og:image:secure_url" content="https://emmettl.github.io/tuneup/og.png" />
+    <meta property="og:image:type" content="image/png" />
+    <!-- Given explicitly: without them WhatsApp tends to fall back to a small square
+         thumbnail instead of the wide card. -->
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="840" />
+    <meta
+      property="og:image:alt"
+      content="A piano keyboard with the notes of a chord lit in amber, pink and mint, beside a twelve-segment pitch dial."
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="tuneup — music theory you can play with" />
+    <meta
+      name="twitter:description"
+      content="Learn music theory by playing with it, from scales and chords through to the blues, rock and electronica."
+    />
+    <meta name="twitter:image" content="https://emmettl.github.io/tuneup/og.png" />
+    <meta
+      name="twitter:image:alt"
+      content="A piano keyboard with the notes of a chord lit in amber, pink and mint, beside a twelve-segment pitch dial."
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
