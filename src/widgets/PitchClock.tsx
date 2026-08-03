@@ -5,6 +5,7 @@ import {
   layoutRing,
   pitchClassAtAngle,
   radiusAtPoint,
+  shortestStep,
 } from './clock-layout.js'
 import { player } from '../audio/index.js'
 import { capturePointer, releasePointer } from './capture.js'
@@ -12,6 +13,7 @@ import {
   type Key,
   type ScaleId,
   SCALES,
+  conventionalTonic,
   noteName,
   pitchClassOf,
   rotateSteps,
@@ -44,7 +46,14 @@ const OUTER = 112
 export interface PitchClockProps {
   /** Which pitch classes are lit. */
   scale: { key: Key; id: ScaleId }
-  /** Let the learner drag the whole lit shape round the ring. */
+  /**
+   * Let the learner spin the whole lit shape round the ring.
+   *
+   * On by default: it is a dial, and a dial that does not turn under the finger reads as
+   * broken. Turn it off for lessons where the notes are the point and moving them would say
+   * something untrue — the relative-minor lesson, where spinning would transpose the very set
+   * it is promising does not change.
+   */
   rotatable?: boolean
   /** Let the learner move the home marker without moving the shape. */
   movableHome?: boolean
@@ -69,7 +78,7 @@ export interface PitchClockProps {
 
 export default function PitchClock({
   scale,
-  rotatable = false,
+  rotatable = true,
   movableHome = false,
   home,
   onRootChange,
@@ -103,12 +112,18 @@ export default function PitchClock({
       (note) => (pitchClassOf(note) + offset + SEGMENTS) % SEGMENTS === tonicClass,
     )
     if (degree <= 0) {
-      return { name: SCALES[scale.id].name, tonic: scale.key.tonic }
+      return {
+        name: SCALES[scale.id].name,
+        // Spun, the scale is rooted somewhere else — so the centre has to name where it has
+        // landed. Reading the original tonic here left the ring saying "C major" while
+        // displaying the notes of E flat major, which is the ring contradicting itself.
+        tonic: offset === 0 ? scale.key.tonic : conventionalTonic(tonicClass),
+      }
     }
     const rotated = scaleFromSteps(rotateSteps(SCALES[scale.id].steps, degree))
     return {
       name: rotated ? SCALES[rotated].name : SCALES[scale.id].name,
-      tonic: spelled[degree]!,
+      tonic: offset === 0 ? spelled[degree]! : conventionalTonic(tonicClass),
     }
   }, [spelled, offset, tonicClass, scale])
 
@@ -148,14 +163,21 @@ export default function PitchClock({
     capturePointer(event.currentTarget, event.pointerId)
     dragFrom.current = pitchClass
 
-    // Grabbing anywhere moves home when home is movable. Requiring the learner to hit the
-    // marker exactly is a 30px target on a phone, and missing it silently did nothing.
-    if (movableHome) dragging.current = 'home'
+    // Which gesture a grab starts.
+    //
+    // When both are available the marker wins, but with a generous reach — a segment and a
+    // half either side, rather than the marker's own ~14px, which is an unhittable target on
+    // a phone. Anywhere else spins the ring.
+    //
+    // When only one is available it takes any grab, so a lesson that offers just one gesture
+    // never has a dead zone.
+    const nearHome = Math.abs(shortestStep(tonicClass, pitchClass)) <= 1
+    if (movableHome && (!rotatable || nearHome)) dragging.current = 'home'
     else if (rotatable) dragging.current = 'ring'
     else dragging.current = null
 
     sound(pitchClass)
-    if (movableHome && pitchClass !== tonicClass) moveHome(pitchClass)
+    if (dragging.current === 'home' && pitchClass !== tonicClass) moveHome(pitchClass)
   }
 
   const moveHome = (pitchClass: number) => {
@@ -197,7 +219,7 @@ export default function PitchClock({
   return (
     <svg
       ref={svg}
-      className="pitch-clock"
+      className={`pitch-clock ${rotatable ? 'is-spinnable' : ''}`}
       viewBox={`0 0 ${VIEW} ${VIEW}`}
       style={{ width: size, height: size }}
       role="group"

@@ -157,6 +157,24 @@ export function circleOfFifths(): CirclePosition[] {
   return positions
 }
 
+/**
+ * How a key on this pitch class is conventionally spelled.
+ *
+ * D sharp major and G flat major are arithmetically fine and nobody writes them — they need
+ * eight and six accidentals respectively where the enharmonic needs three and six the other
+ * way. Picking from the circle gives the spelling a musician would actually use, which is
+ * what a ring naming the key it has been spun to should show.
+ */
+export function conventionalTonic(pitchClass: number, mode: Mode = 'major'): Spelled {
+  const wanted = ((pitchClass % 12) + 12) % 12
+  const position = circleOfFifths().find(
+    (entry) => pitchClassOf(mode === 'minor' ? entry.minor.tonic : entry.major.tonic) === wanted,
+  )
+  return position
+    ? (mode === 'minor' ? position.minor.tonic : position.major.tonic)
+    : spellChromatic(60 + wanted, 'sharp')
+}
+
 const MODE_SCALE: Record<Mode, ScaleId> = { major: 'major', minor: 'natural-minor' }
 
 /** The scale of the key, spelled. Minor means natural minor here; harmonic and melodic are

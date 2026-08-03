@@ -33,7 +33,13 @@ export default function SameNotesDifferentHome() {
         {/* Always C major's seven notes. Home moves within them; the ring works out what the
             result is called. Passing a different scale when home reaches A would change the
             lit set, which is the one thing this lesson promises does not happen. */}
-        <PitchClock scale={{ key: key('C'), id: 'major' }} movableHome onRootChange={setHome} labels="note" />
+        <PitchClock
+          scale={{ key: key('C'), id: 'major' }}
+          movableHome
+          rotatable={false}
+          onRootChange={setHome}
+          labels="note"
+        />
       </Try>
 
       <Caption>

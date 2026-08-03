@@ -3,6 +3,7 @@ import { midiOf, noteName } from './pitch.js'
 import {
   circleDistance,
   circleOfFifths,
+  conventionalTonic,
   dominantKey,
   fifthsOf,
   key,
@@ -237,5 +238,38 @@ describe('spelling cleanly', () => {
         expect(spellsCleanly(k), keyName(k)).toBe(true)
       }
     }
+  })
+})
+
+describe('conventional spelling of a key', () => {
+  it('picks the spelling a musician would write', () => {
+    // D sharp major and A sharp major are arithmetically fine and nobody writes them.
+    expect(noteName(conventionalTonic(3))).toBe('E♭')
+    expect(noteName(conventionalTonic(1))).toBe('D♭')
+    expect(noteName(conventionalTonic(10))).toBe('B♭')
+    expect(noteName(conventionalTonic(6))).toBe('F♯')
+  })
+
+  it('leaves the naturals alone', () => {
+    for (const [pitchClass, name] of [[0, 'C'], [2, 'D'], [4, 'E'], [5, 'F'], [7, 'G'], [9, 'A'], [11, 'B']] as const) {
+      expect(noteName(conventionalTonic(pitchClass)), `${pitchClass}`).toBe(name)
+    }
+  })
+
+  it('covers all twelve, never with more than six accidentals', () => {
+    for (let pitchClass = 0; pitchClass < 12; pitchClass++) {
+      const tonic = conventionalTonic(pitchClass)
+      expect(midiOf(tonic) % 12, `${pitchClass}`).toBe(pitchClass)
+      expect(Math.abs(fifthsOf({ tonic, mode: 'major' })), `${pitchClass}`).toBeLessThanOrEqual(6)
+    }
+  })
+
+  it('spells minor keys too', () => {
+    expect(noteName(conventionalTonic(9, 'minor'))).toBe('A')
+    expect(noteName(conventionalTonic(0, 'minor'))).toBe('C')
+    expect(noteName(conventionalTonic(4, 'minor'))).toBe('E')
+    // Pitch class 3 is the genuine coin flip: D♯ minor is six sharps and E♭ minor is six
+    // flats, so either is defensible and the circle's choice is the one to be consistent with.
+    expect(['D♯', 'E♭']).toContain(noteName(conventionalTonic(3, 'minor')))
   })
 })

@@ -15,6 +15,9 @@
   overscroll-behavior: contain;
 }
 
+.pitch-clock.is-spinnable { cursor: grab; }
+.pitch-clock.is-spinnable:active { cursor: grabbing; }
+
 .pitch-clock-segment {
   fill: #16102b;
   stroke: rgba(255, 255, 255, 0.05);
@@ -88,5 +91,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pitch-clock-segment { transition: none; }
+  .pitch-clock.is-spinnable { cursor: grab; }
+.pitch-clock.is-spinnable:active { cursor: grabbing; }
+
+.pitch-clock-segment { transition: none; }
 }
