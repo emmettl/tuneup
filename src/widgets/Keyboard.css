@@ -49,8 +49,11 @@
   pointer-events: auto;
 }
 
+/* No `background` here: it comes from --hue on .keyboard-key below, so that the sounding
+   state can brighten whatever hue the key currently has. A hardcoded background here would
+   also out-specify the role rules, which set custom properties rather than a background —
+   and it silently did, leaving every coloured key looking plain. */
 .keyboard-key.is-white {
-  background: linear-gradient(#f3f0ff, #d9d3f0);
   border-right: 1px solid rgba(16, 11, 28, 0.35);
   border-radius: 0 0 4px 4px;
   color: #2a2140;
@@ -58,7 +61,6 @@
 }
 
 .keyboard-key.is-black {
-  background: linear-gradient(#2a2340, #120d20);
   border-radius: 0 0 3px 3px;
   color: var(--ink-dim);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
@@ -85,58 +87,68 @@
   picked them up in the chords chapter can read a keyboard six chapters later without being
   told, which is teaching through the design system rather than through prose.
 
+  Each key carries its hue as a custom property rather than a hardcoded gradient, so the
+  sounding state below can BRIGHTEN that hue instead of having to know which one it is.
+
   Colour is never the only channel: `data-role` also drives the aria-label ("E4, the third"),
   so the same information reaches someone who cannot see or cannot hear it.
 */
-.keyboard-key[data-role='root'] { background: linear-gradient(var(--root), #d98d18); color: #2a2140; }
-.keyboard-key[data-role='third'] { background: linear-gradient(var(--third), #d95bb3); color: #2a2140; }
-.keyboard-key[data-role='fifth'] { background: linear-gradient(var(--fifth), #35c7a8); color: #12321f; }
-.keyboard-key[data-role='seventh'] { background: linear-gradient(var(--seventh), #6a5cd6); color: #f2efff; }
-.keyboard-key[data-role='blue'] { background: linear-gradient(var(--blue), #219fc4); color: #0d2733; }
-.keyboard-key[data-role='scale'] { background: linear-gradient(#cdc4f2, #a99ddb); color: #2a2140; }
+.keyboard-key {
+  --hue: #f3f0ff;
+  --hue-deep: #d9d3f0;
+  --hue-rim: #6c6390;
+  /* The halo colour. Defaults to the key's own hue, and is overridden only where that hue is
+     too dark to glow — a near-black key haloed in near-black has no halo at all. */
+  --hue-glow: var(--hue);
+  background: linear-gradient(var(--hue), var(--hue-deep));
+}
+
+.keyboard-key.is-black {
+  --hue: #2a2340;
+  --hue-deep: #120d20;
+  --hue-rim: #8a7fc0;
+  --hue-glow: #b4a9e8;
+}
+
+.keyboard-key[data-role='root'] { --hue: var(--root); --hue-deep: #d98d18; --hue-rim: #8a5608; color: #2a2140; }
+.keyboard-key[data-role='third'] { --hue: var(--third); --hue-deep: #d95bb3; --hue-rim: #93276c; color: #2a2140; }
+.keyboard-key[data-role='fifth'] { --hue: var(--fifth); --hue-deep: #35c7a8; --hue-rim: #12705c; color: #12321f; }
+.keyboard-key[data-role='seventh'] { --hue: var(--seventh); --hue-deep: #6a5cd6; --hue-rim: #3a2e9c; color: #f2efff; }
+.keyboard-key[data-role='blue'] { --hue: var(--blue); --hue-deep: #219fc4; --hue-rim: #0d647e; color: #0d2733; }
+.keyboard-key[data-role='scale'] { --hue: #cdc4f2; --hue-deep: #a99ddb; --hue-rim: #574d80; color: #2a2140; }
 
 .keyboard-key.is-black[data-role='scale'] {
-  background: linear-gradient(#6b5fa8, #4a3f7d);
+  --hue: #6b5fa8;
+  --hue-deep: #4a3f7d;
+  --hue-rim: #cdc4f2;
   color: #efeaff;
 }
 
 /*
   Sounding.
 
-  HUE CARRIES FUNCTION, BRIGHTNESS CARRIES STATE. That split is the rule, and the first
-  version broke it: sounding keys lit amber, which is the root's colour — so a sounding third
-  looked like a root, and on a root you could not tell whether it was lit at all. One hue was
-  doing two jobs.
+  HUE CARRIES FUNCTION, BRIGHTNESS CARRIES STATE — and the state has to be expressed WITHIN
+  the hue, not instead of it. Two wrong versions got here:
 
-  So a sounding key goes bright and white and keeps a rim of its own role colour, which reads
-  as "this one is lit" over the top of "this one is the third" rather than replacing it.
+    Amber for everything. Amber already means root, so a sounding third looked like a root and
+    a sounding root looked like nothing had happened.
 
-  Written straight onto the DOM by useSoundingDom from a rAF loop — no React render — and
-  driven by the AUDIO CLOCK rather than by when the note was scheduled, so the light is on the
-  note you can hear rather than up to a lookahead window ahead of it.
+    Flat white for everything. That removed the hue entirely, and since the plain keys are
+    already near-white, a sounding coloured key became indistinguishable from an ordinary one.
+
+  So: the gradient runs from white INTO the key's own hue, the glow is that hue, and the rim is
+  a darker version of it. A lit third is an unmistakably brighter pink; a lit root is a brighter
+  amber; the two are still told apart by colour, and lit is still told apart from resting by
+  brightness, glow and the 1px press.
 */
 .keyboard-key[data-sounding] {
-  background: linear-gradient(#ffffff, #e8e4ff);
-  color: #1b1430;
+  background: linear-gradient(#ffffff 8%, var(--hue) 62%, var(--hue-deep));
   box-shadow:
-    0 0 20px rgba(255, 255, 255, 0.75),
-    inset 0 0 0 2px currentColor,
-    inset 0 -3px 0 rgba(0, 0, 0, 0.16);
+    0 0 22px 2px var(--hue-glow),
+    inset 0 0 0 2px var(--hue-rim),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.18);
   transform: translateY(1px);
   transition: none;
-}
-
-/* The rim keeps the role readable while the key is lit. currentColor is the role's own text
-   colour, which is already set per role above. */
-.keyboard-key[data-role='root'][data-sounding] { color: #a86a10; }
-.keyboard-key[data-role='third'][data-sounding] { color: #b83f8d; }
-.keyboard-key[data-role='fifth'][data-sounding] { color: #1f8f76; }
-.keyboard-key[data-role='seventh'][data-sounding] { color: #5847c9; }
-.keyboard-key[data-role='blue'][data-sounding] { color: #1683a6; }
-
-.keyboard-key.is-black[data-sounding] {
-  background: linear-gradient(#f4f0ff, #cfc7f0);
-  color: #2a2140;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -148,7 +160,7 @@
 
   .keyboard-key[data-sounding] {
     transform: none;
-    box-shadow: inset 0 0 0 3px currentColor;
+    box-shadow: inset 0 0 0 3px var(--hue-rim);
   }
 }
 
