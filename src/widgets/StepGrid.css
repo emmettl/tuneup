@@ -1,0 +1,70 @@
+.step-grid {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.step-grid-lanes { display: grid; gap: 6px; }
+
+.step-lane {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.step-lane-label {
+  font-size: 0.7rem;
+  color: var(--ink-dim);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.step-lane-cells {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+}
+
+.step-cell {
+  aspect-ratio: 1;
+  min-height: 26px;
+  padding: 0;
+  border-radius: 5px;
+  border: 1px solid var(--panel-edge);
+  background: #16102b;
+  cursor: pointer;
+  /* A drag across the grid must toggle cells, not scroll the page. */
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The downbeats are taller-looking, so the bar has a shape you can read without counting. */
+.step-cell.is-downbeat { border-color: rgba(255, 255, 255, 0.2); }
+
+.step-cell.is-on { background: var(--fifth); border-color: var(--fifth); }
+.step-cell.is-on.is-downbeat { background: var(--root); border-color: var(--root); }
+
+/* The playhead. Driven by the AUDIO clock, so the light is on the beat you can hear. */
+.step-cell.is-live { box-shadow: 0 0 0 2px var(--ink) inset; }
+
+.step-cell:disabled { cursor: default; opacity: 0.85; }
+
+.step-grid-transport {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.step-grid-hint { font-size: 0.75rem; color: var(--ink-dim); }
+
+@media (max-width: 560px) {
+  .step-lane { grid-template-columns: 46px 1fr; gap: 6px; }
+  .step-cell { min-height: 20px; border-radius: 4px; }
+  .step-lane-label { font-size: 0.62rem; }
+}

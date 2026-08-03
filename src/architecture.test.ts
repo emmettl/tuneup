@@ -77,6 +77,45 @@ describe('the theory layer stays pure', () => {
   })
 })
 
+describe('lessons do not reinvent the theory core', () => {
+  // This has happened twice while writing lessons: a local `midiOf`, and a local `fifthsOf`.
+  // Both typechecked, both worked, and both were a second copy of something the theory core
+  // owns — which is exactly how two answers to the same musical question start to diverge.
+  //
+  // Matched on the FUNCTION NAME rather than on behaviour, because that is the tell: someone
+  // needing `midiOf` and not finding the import writes `function midiOf`.
+  const OWNED = [
+    'midiOf',
+    'noteName',
+    'fifthsOf',
+    'pitchClassOf',
+    'spellMidi',
+    'chordNotes',
+    'scaleNotes',
+    'scalePitches',
+    'degreeOf',
+    'romanToChord',
+  ]
+
+  const lessonFiles = () => sourceFiles('lessons').filter((path) => path.endsWith('.tsx'))
+
+  it('has lessons to check', () => {
+    expect(lessonFiles().length).toBeGreaterThan(3)
+  })
+
+  it('never declares a function the theory core already exports', () => {
+    for (const path of lessonFiles()) {
+      const source = read(path)
+      for (const name of OWNED) {
+        expect(
+          source,
+          `${path} declares its own ${name} — import it from theory/ instead`,
+        ).not.toMatch(new RegExp(`function\\s+${name}\\b`))
+      }
+    }
+  })
+})
+
 describe('import extensions', () => {
   // One rule, decided on day one because it is a repo-wide diff later: `.ts` modules are
   // imported with a `.js` extension, `.tsx` components with `.tsx`. Both resolve under
