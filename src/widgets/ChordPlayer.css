@@ -31,11 +31,12 @@
 .chord-card.is-editable { cursor: pointer; border-style: dashed; }
 .chord-card.is-editable:hover { border-color: var(--root); }
 
-/* The bar currently sounding. Amber, and it moves — the only thing on screen that does. */
+/* The bar currently sounding. White rather than amber, matching the keyboard: on this site
+   hue means function and brightness means state, and amber already means "root". */
 .chord-card.is-live {
-  border-color: var(--root);
-  background: linear-gradient(#2a1f10, #3a2a12);
-  box-shadow: 0 0 16px rgba(255, 176, 46, 0.28);
+  border-color: var(--ink);
+  background: linear-gradient(#2b2545, #3a3358);
+  box-shadow: 0 0 16px rgba(236, 232, 255, 0.3);
 }
 
 .chord-card-numeral {
@@ -48,7 +49,7 @@
   color: var(--ink-dim);
 }
 
-.chord-card.is-live .chord-card-name { color: var(--root); }
+.chord-card.is-live .chord-card-name { color: var(--ink); }
 
 .chord-picker {
   position: absolute;
@@ -95,5 +96,5 @@
 @media (prefers-reduced-motion: reduce) {
   .chord-card { transition: none; }
   /* The live bar still has to be identifiable — only the glow goes. */
-  .chord-card.is-live { box-shadow: inset 0 0 0 2px var(--root); }
+  .chord-card.is-live { box-shadow: inset 0 0 0 2px var(--ink); }
 }

@@ -101,21 +101,41 @@
 }
 
 /*
-  Sounding. Written straight onto the DOM by useSoundingDom from a rAF loop — no React render
-  — and driven by the AUDIO CLOCK rather than by when the note was scheduled, so the light is
-  on the note you can hear rather than up to a lookahead window ahead of it.
+  Sounding.
+
+  HUE CARRIES FUNCTION, BRIGHTNESS CARRIES STATE. That split is the rule, and the first
+  version broke it: sounding keys lit amber, which is the root's colour — so a sounding third
+  looked like a root, and on a root you could not tell whether it was lit at all. One hue was
+  doing two jobs.
+
+  So a sounding key goes bright and white and keeps a rim of its own role colour, which reads
+  as "this one is lit" over the top of "this one is the third" rather than replacing it.
+
+  Written straight onto the DOM by useSoundingDom from a rAF loop — no React render — and
+  driven by the AUDIO CLOCK rather than by when the note was scheduled, so the light is on the
+  note you can hear rather than up to a lookahead window ahead of it.
 */
 .keyboard-key[data-sounding] {
-  background: linear-gradient(#fffdf6, var(--root));
+  background: linear-gradient(#ffffff, #e8e4ff);
+  color: #1b1430;
   box-shadow:
-    0 0 18px rgba(255, 176, 46, 0.55),
-    inset 0 -3px 0 rgba(0, 0, 0, 0.18);
+    0 0 20px rgba(255, 255, 255, 0.75),
+    inset 0 0 0 2px currentColor,
+    inset 0 -3px 0 rgba(0, 0, 0, 0.16);
   transform: translateY(1px);
   transition: none;
 }
 
+/* The rim keeps the role readable while the key is lit. currentColor is the role's own text
+   colour, which is already set per role above. */
+.keyboard-key[data-role='root'][data-sounding] { color: #a86a10; }
+.keyboard-key[data-role='third'][data-sounding] { color: #b83f8d; }
+.keyboard-key[data-role='fifth'][data-sounding] { color: #1f8f76; }
+.keyboard-key[data-role='seventh'][data-sounding] { color: #5847c9; }
+.keyboard-key[data-role='blue'][data-sounding] { color: #1683a6; }
+
 .keyboard-key.is-black[data-sounding] {
-  background: linear-gradient(var(--root), #b8700d);
+  background: linear-gradient(#f4f0ff, #cfc7f0);
   color: #2a2140;
 }
 
@@ -128,7 +148,7 @@
 
   .keyboard-key[data-sounding] {
     transform: none;
-    box-shadow: inset 0 0 0 2px var(--ink);
+    box-shadow: inset 0 0 0 3px currentColor;
   }
 }
 
