@@ -55,6 +55,15 @@ export const LESSONS: LessonMeta[] = [
     load: () => import('./pitch/TheSameNoteBigger.tsx'),
   },
   {
+    slug: 'sharps-and-flats',
+    title: 'Sharps, flats, and two names for one key',
+    summary: 'Every black key has at least two names, and which is right depends on context.',
+    unit: 'pitch',
+    minutes: 4,
+    after: ['twelve-doors'],
+    load: () => import('./pitch/SharpsAndFlats.tsx'),
+  },
+  {
     slug: 'counting-steps',
     title: 'Counting steps',
     summary: 'The distance between two notes, measured two different ways on purpose.',
@@ -98,6 +107,15 @@ export const LESSONS: LessonMeta[] = [
     minutes: 6,
     after: ['move-the-shape'],
     load: () => import('./major/TheDial.tsx'),
+  },
+  {
+    slug: 'home',
+    title: 'Home',
+    summary: 'One note in every key feels like the end. Your ear already knows which.',
+    unit: 'major',
+    minutes: 5,
+    after: ['seven-from-twelve'],
+    load: () => import('./major/Home.tsx'),
   },
   {
     slug: 'same-notes-different-home',
@@ -172,6 +190,15 @@ export const LESSONS: LessonMeta[] = [
     load: () => import('./harmony/RomanNumerals.tsx'),
   },
   {
+    slug: 'three-jobs',
+    title: 'Three jobs',
+    summary: 'Seven chords, three families. Swap within a family and it still works.',
+    unit: 'harmony',
+    minutes: 5,
+    after: ['roman-numerals'],
+    load: () => import('./harmony/ThreeJobs.tsx'),
+  },
+  {
     slug: 'landing-and-swerving',
     title: 'Landing, and swerving',
     summary: 'Swap the last chord while it loops and hear the ending change under you.',
@@ -197,6 +224,15 @@ export const LESSONS: LessonMeta[] = [
     minutes: 5,
     after: ['make-a-noise'],
     load: () => import('./rhythm/FourOnTheFloor.tsx'),
+  },
+  {
+    slug: 'splitting-the-beat',
+    title: 'Splitting the beat',
+    summary: 'Same tempo, finer divisions. Most of what sounds faster is not.',
+    unit: 'rhythm',
+    minutes: 4,
+    after: ['pulse'],
+    load: () => import('./rhythm/SplittingTheBeat.tsx'),
   },
   {
     slug: 'off-the-grid',
@@ -253,6 +289,15 @@ export const LESSONS: LessonMeta[] = [
     load: () => import('./blues/EverythingIsASeventh.tsx'),
   },
   {
+    slug: 'shuffle',
+    title: 'Shuffle',
+    summary: 'The other half of the blues, and it is entirely about where the off-beats land.',
+    unit: 'blues',
+    minutes: 5,
+    after: ['everything-is-a-seventh', 'off-the-grid'],
+    load: () => import('./blues/Shuffle.tsx'),
+  },
+  {
     slug: 'take-the-third-out',
     title: 'Take the third out',
     summary: 'Turn the gain up on a chord, then remove one note and hear rock guitar appear.',
@@ -287,6 +332,15 @@ export const LESSONS: LessonMeta[] = [
     minutes: 6,
     after: ['the-sound-is-the-idea'],
     load: () => import('./electronica/MinorModalAndFourChords.tsx'),
+  },
+  {
+    slug: 'repetition-is-the-structure',
+    title: 'Repetition is the structure',
+    summary: 'One bar for five minutes. The layers are what move.',
+    unit: 'electronica',
+    minutes: 5,
+    after: ['four-on-the-floor'],
+    load: () => import('./electronica/RepetitionIsTheStructure.tsx'),
   },
 ]
 
