@@ -196,3 +196,152 @@ code {
   font-size: 11px;
   word-break: break-word;
 }
+
+/* ---- The shell ------------------------------------------------------------------------ */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 10px 14px;
+  background: var(--bg-raised);
+  color: var(--ink);
+  border-radius: 0 0 8px 0;
+  z-index: 10;
+}
+
+.skip-link:focus {
+  /* Keyboard-only users land here first; it has to become visible, not merely focusable. */
+  left: 0;
+}
+
+.page {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 3rem 20px 2rem;
+}
+
+.page-head { margin-bottom: 3rem; }
+
+.page-title {
+  font-size: clamp(2.4rem, 7vw, 3.4rem);
+  margin: 0;
+}
+
+.page-lede {
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--ink-dim);
+  margin: 0.5rem 0 1.4rem;
+  max-width: 34rem;
+}
+
+.page-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.button {
+  display: inline-block;
+  font: inherit;
+  font-size: 0.9375rem;
+  padding: 0.6rem 1rem;
+  border-radius: 9px;
+  border: 1px solid var(--panel-edge);
+  background: var(--bg-raised);
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button.is-primary {
+  background: var(--root);
+  border-color: var(--root);
+  color: #241a08;
+  font-weight: 600;
+}
+
+.unit { margin: 2.5rem 0; }
+
+.unit-title { font-size: 1.35rem; margin: 0; }
+
+.unit-blurb {
+  margin: 0.2rem 0 0.9rem;
+  color: var(--ink-dim);
+  font-size: 0.9375rem;
+}
+
+.lesson-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.lesson-card {
+  display: grid;
+  gap: 3px;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  text-decoration: none;
+  color: inherit;
+}
+
+.lesson-card:hover { border-color: var(--root); }
+
+.lesson-card-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lesson-card-summary { color: var(--ink-dim); font-size: 0.9rem; line-height: 1.5; }
+.lesson-card-meta { color: var(--ink-dim); font-size: 0.75rem; }
+
+/* Status is a word, not only a colour — a coloured dot alone is invisible to anyone who
+   cannot see it and meaningless to anyone unfamiliar with the convention. */
+.lesson-chip {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-edge);
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.lesson-chip.is-complete { color: var(--fifth); border-color: var(--fifth); }
+.lesson-chip.is-explored { color: var(--root); border-color: var(--root); }
+
+.lesson-breadcrumb { margin-bottom: 0.5rem; font-size: 0.875rem; }
+.lesson-breadcrumb a { color: var(--ink-dim); }
+
+.lesson-builds {
+  margin: 0 0 1rem;
+  font-size: 0.8125rem;
+  color: var(--ink-dim);
+}
+
+.lesson-loading { color: var(--ink-dim); font-size: 0.8125rem; }
+
+.lesson-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 3rem;
+  padding: 0 20px;
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.site-footer {
+  max-width: 44rem;
+  margin: 0 auto;
+  padding: 0 20px 3rem;
+}
+
+a { color: var(--root); }

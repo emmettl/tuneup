@@ -1,0 +1,158 @@
+/*
+  Lesson layout.
+
+  The page around a widget is a READING surface: wide line-height, generous measure, plain
+  system sans. The widgets themselves stay dark and glowing. That contrast is the site's whole
+  visual grammar — glowing dark panel means something you play, calm surface means something
+  you read — and it is why the lesson body does not try to look like an instrument.
+*/
+
+.lesson {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 20px 6rem;
+}
+
+.lesson-headline {
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  margin: 2rem 0 0.75rem;
+}
+
+.lesson-say {
+  margin: 1.15rem 0;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--ink);
+}
+
+/* The interaction. Given room, because it is the lesson — the prose is the caption. */
+.lesson-try {
+  margin: 1.75rem 0;
+}
+
+.lesson-try-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lesson-caption {
+  margin: 0.6rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-dim);
+}
+
+/* The rigour, collapsed. */
+.lesson-aside {
+  margin: 1.5rem 0;
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+
+.lesson-aside > summary {
+  cursor: pointer;
+  padding: 0.7rem 0.9rem;
+  font-size: 0.875rem;
+  color: var(--ink-dim);
+  list-style: none;
+}
+
+.lesson-aside > summary::-webkit-details-marker { display: none; }
+.lesson-aside > summary::before { content: '▸ '; }
+.lesson-aside[open] > summary::before { content: '▾ '; }
+
+.lesson-aside-body {
+  padding: 0 0.9rem 0.9rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--ink-dim);
+}
+
+.lesson-aside-body p { margin: 0.5rem 0; }
+
+/* A question. Never a test. */
+.lesson-check {
+  margin: 2rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+}
+
+.lesson-check-ask {
+  margin: 0 0 0.8rem;
+  font-size: 0.9375rem;
+}
+
+.lesson-check-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lesson-check-option {
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--panel-edge);
+}
+
+/* Colour is never the only channel: the explanation below states the result in words, and
+   the button keeps its aria-pressed state. */
+.lesson-check-option.is-right {
+  border-color: var(--fifth);
+  box-shadow: inset 0 0 0 1px var(--fifth);
+}
+
+.lesson-check-option.is-wrong {
+  border-color: var(--third);
+  opacity: 0.7;
+}
+
+.lesson-check-explain {
+  margin: 0.85rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--ink-dim);
+}
+
+/* A lesson's own controls. Distinct from .lesson-check-option on purpose: that style means
+   "this is the right answer", and a mode toggle wearing it tells the learner they got
+   something correct when they only picked a mode. */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.control {
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 9px;
+  cursor: pointer;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--panel-edge);
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.control:hover { border-color: var(--ink-dim); }
+
+/* The selected option of a toggle. Amber — the "you are here" colour — rather than mint,
+   which everywhere else on the site means a correct answer. aria-pressed carries the same
+   information for anyone not reading the colour. */
+.control.is-on {
+  background: var(--root);
+  border-color: var(--root);
+  color: #241a08;
+  font-weight: 600;
+}

@@ -10,7 +10,16 @@ import {
   whiteBounded,
   whiteKeyCount,
 } from './keyboard-layout.js'
-import { type Key, type ScaleId, degreeOf, noteName, spellInKey, spellMidi } from '../theory/index.js'
+import {
+  type Key,
+  type ScaleId,
+  type Spelled,
+  degreeOf,
+  noteName,
+  pitchClassOf,
+  spellInKey,
+  spellMidi,
+} from '../theory/index.js'
 import type { Highlight, ToneRole } from './highlight.js'
 import './Keyboard.css'
 
@@ -20,6 +29,23 @@ export interface KeyboardProps {
   highlight?: Highlight[]
   /** Colour every note of a scale by its role, without listing them by hand. */
   scale?: { key: Key; id: ScaleId }
+  /**
+   * Spell notes as this key would.
+   *
+   * Without it labels default to sharps, so a lesson that calls a note E♭ in its prose showed
+   * "D♯" on the key and announced "D sharp 4" to a screen reader. Two names for one key is
+   * exactly the confusion chapter 1 works to clear up; the widget must not reintroduce it.
+   */
+  spellIn?: Key
+  /**
+   * Spell these exact notes this exact way, whatever the key would say.
+   *
+   * `spellIn` alone is not enough for a scale that reaches outside its key. The blue note in A
+   * is a flattened fifth — E♭ — but it is not in A minor, so spelling by key falls through to
+   * the chromatic default and calls it D♯. The lesson's prose says E♭ and the key said D♯,
+   * which is precisely the two-names-for-one-key confusion chapter 1 exists to clear up.
+   */
+  spellNotes?: Spelled[]
   labels?: 'none' | 'note' | 'degree' | 'keycap'
   instrument?: InstrumentId
   /**
@@ -50,6 +76,8 @@ export default function Keyboard({
   range = [60, 84],
   highlight,
   scale,
+  spellIn,
+  spellNotes,
   labels = 'none',
   instrument,
   keys = false,
@@ -70,6 +98,12 @@ export default function Keyboard({
   const whites = whiteKeyCount(from, to)
 
   const roles = useMemo(() => resolveRoles(from, to, highlight, scale), [from, to, highlight, scale])
+  // Pitch class → the spelling this lesson wants for it.
+  const spellings = useMemo(() => {
+    const map = new Map<number, Spelled>()
+    for (const note of spellNotes ?? []) map.set(pitchClassOf(note), note)
+    return map
+  }, [spellNotes])
   const held = useRef(new Map<number, number>())
 
   useSoundingDom(surface)
@@ -187,7 +221,9 @@ export default function Keyboard({
           key={box.midi}
           box={box}
           role={roles.get(box.midi)}
-          label={labelFor(box.midi, labels, from, scale)}
+          spellIn={spellIn ?? scale?.key}
+          spelled={spellings.get(((box.midi % 12) + 12) % 12)}
+          label={labelFor(box.midi, labels, from, spellings, spellIn ?? scale?.key, scale)}
           onActivate={() => {
             // Keyboard activation of a single key: a discrete note rather than a hold,
             // because there is no key-up to pair it with from a click.
@@ -204,11 +240,16 @@ function KeyCap({
   box,
   role,
   label,
+  spellIn,
+  spelled,
   onActivate,
 }: {
   box: KeyBox
   role?: ToneRole
   label?: string
+  spellIn?: Key
+  /** This key's spelling, already resolved by the parent. */
+  spelled?: Spelled
   onActivate: () => void
 }) {
   return (
@@ -228,7 +269,7 @@ function KeyCap({
         if (event.detail !== 0) return
         onActivate()
       }}
-      aria-label={ariaLabelFor(box.midi, role)}
+      aria-label={ariaLabelFor(box.midi, role, spellIn, spelled)}
       tabIndex={-1}
     >
       {label && <span className="keyboard-label">{label}</span>}
@@ -236,22 +277,50 @@ function KeyCap({
   )
 }
 
-function ariaLabelFor(midi: number, role?: ToneRole): string {
-  const name = noteName(spellMidi(midi), { octave: true, unicode: false })
+/** How each role is said out loud. Written out rather than interpolated, because "the blue"
+ *  is not what anyone calls that note and "the seventh" needs no article games. */
+const ROLE_PHRASE: Partial<Record<ToneRole, string>> = {
+  root: 'the root',
+  third: 'the third',
+  fifth: 'the fifth',
+  seventh: 'the seventh',
+  blue: 'the blue note',
+}
+
+function ariaLabelFor(midi: number, role?: ToneRole, spellIn?: Key, given?: Spelled): string {
+  // Spelled the way the surrounding music spells it, and read as words rather than glyphs —
+  // a screen reader says nothing useful for '♯'.
+  const base = given ?? (spellIn ? spellInKey(midi, spellIn) : spellMidi(midi))
+  const octave = Math.floor(midi / 12) - 1
+  const spelled = given ? { ...base, octave } : base
+  const name = `${spelled.letter}${accidentalWord(spelled.alter)} ${spelled.octave}`
+  const phrase = role ? ROLE_PHRASE[role] : undefined
   // The musical meaning, not just the name — this is the channel a learner who cannot hear
-  // the difference relies on, and "E4" alone does not teach anything.
-  return role && role !== 'outside' && role !== 'scale' ? `${name}, the ${role}` : name
+  // the difference relies on, and "E flat 4" alone does not teach anything.
+  return phrase ? `${name}, ${phrase}` : name
+}
+
+function accidentalWord(alter: number): string {
+  if (alter === 0) return ''
+  const word = alter > 0 ? ' sharp' : ' flat'
+  return Math.abs(alter) === 2 ? `${word} ${word.trim()}` : word
 }
 
 function labelFor(
   midi: number,
   labels: KeyboardProps['labels'],
   from: number,
+  spellings: Map<number, Spelled>,
+  spellIn?: Key,
   scale?: { key: Key; id: ScaleId },
 ): string | undefined {
   switch (labels) {
-    case 'note':
-      return noteName(scale ? spellInKey(midi, scale.key) : spellMidi(midi))
+    case 'note': {
+      // An explicit spelling wins over the key's, so a scale that reaches outside its key
+      // still names its own notes. See `spellNotes` on KeyboardProps.
+      const given = spellings.get(((midi % 12) + 12) % 12)
+      return noteName(given ?? (spellIn ? spellInKey(midi, spellIn) : spellMidi(midi)))
+    }
     case 'degree': {
       if (!scale) return undefined
       const degree = degreeOf(scale.key.tonic, scale.id, spellMidi(midi))
