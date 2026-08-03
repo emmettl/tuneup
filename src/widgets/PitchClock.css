@@ -38,7 +38,7 @@
 .pitch-clock-label {
   font-family: var(--font-mono);
   font-size: 11px;
-  fill: var(--ink-dim);
+  fill: var(--panel-ink-dim);
   pointer-events: none;
 }
 
@@ -80,13 +80,13 @@
 .pitch-clock-centre {
   font-family: var(--font-display);
   font-size: 20px;
-  fill: var(--ink);
+  fill: var(--panel-ink);
 }
 
 .pitch-clock-centre-sub {
   font-family: var(--font-mono);
   font-size: 9px;
-  fill: var(--ink-dim);
+  fill: var(--panel-ink-dim);
   letter-spacing: 0.06em;
 }
 

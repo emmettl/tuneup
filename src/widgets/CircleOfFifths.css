@@ -25,7 +25,7 @@
 .circle-label {
   font-family: var(--font-mono);
   font-size: 12px;
-  fill: var(--ink-dim);
+  fill: var(--panel-ink-dim);
   dominant-baseline: middle;
   text-anchor: middle;
   pointer-events: none;
@@ -37,14 +37,14 @@
 .circle-centre {
   font-family: var(--font-display);
   font-size: 22px;
-  fill: var(--ink);
+  fill: var(--panel-ink);
   text-anchor: middle;
 }
 
 .circle-centre-sub {
   font-family: var(--font-mono);
   font-size: 8.5px;
-  fill: var(--ink-dim);
+  fill: var(--panel-ink-dim);
   text-anchor: middle;
 }
 

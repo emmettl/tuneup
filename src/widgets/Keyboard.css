@@ -62,7 +62,7 @@
 
 .keyboard-key.is-black {
   border-radius: 0 0 3px 3px;
-  color: var(--ink-dim);
+  color: var(--panel-ink-dim);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
   z-index: 2;
 }

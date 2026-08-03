@@ -17,7 +17,7 @@
 
 .fretboard-open {
   font-size: 0.68rem;
-  color: var(--ink-dim);
+  color: var(--panel-ink-dim);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -45,7 +45,7 @@
 .fretboard-cell.is-open {
   background:
     linear-gradient(var(--panel-edge), var(--panel-edge)) center / 100% 1px no-repeat,
-    linear-gradient(var(--ink-dim), var(--ink-dim)) right / 2px 100% no-repeat;
+    linear-gradient(var(--panel-ink-dim), var(--panel-ink-dim)) right / 2px 100% no-repeat;
 }
 
 .fretboard-dot {
@@ -77,4 +77,4 @@
   padding-top: 2px;
 }
 
-.fretboard-fretnum { color: var(--ink-dim); opacity: 0.5; }
+.fretboard-fretnum { color: var(--panel-ink-dim); opacity: 0.5; }

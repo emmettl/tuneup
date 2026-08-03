@@ -26,12 +26,12 @@
 
 .timbre-label {
   font-size: 0.68rem;
-  color: var(--ink-dim);
+  color: var(--panel-ink-dim);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.timbre-value { color: var(--ink); text-transform: none; letter-spacing: 0; }
+.timbre-value { color: var(--panel-ink); text-transform: none; letter-spacing: 0; }
 
 .timbre-field select,
 .timbre-field input[type='range'] {
@@ -46,7 +46,7 @@
   padding: 6px 8px;
   border-radius: 7px;
   background: #16102b;
-  color: var(--ink);
+  color: var(--panel-ink);
   border: 1px solid var(--panel-edge);
 }
 

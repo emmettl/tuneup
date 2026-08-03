@@ -360,6 +360,33 @@ export const LESSONS: LessonMeta[] = [
     after: ['four-on-the-floor'],
     load: () => import('./electronica/RepetitionIsTheStructure.tsx'),
   },
+  {
+    slug: 'the-four-chord-loop',
+    title: 'The four-chord loop',
+    summary: 'Four chords behind a great many pop choruses, and what rotating them does.',
+    unit: 'extras',
+    minutes: 5,
+    after: ['three-jobs'],
+    load: () => import('./extras/TheFourChordLoop.tsx'),
+  },
+  {
+    slug: 'the-offbeat',
+    title: 'The offbeat',
+    summary: 'Move the chord half a beat and you have changed genre. Nothing else changes.',
+    unit: 'extras',
+    minutes: 4,
+    after: ['splitting-the-beat'],
+    load: () => import('./extras/TheOffbeat.tsx'),
+  },
+  {
+    slug: 'the-sound-of-wonder',
+    title: 'The sound of wonder',
+    summary: 'Film music\u2019s trick for awe is one raised note.',
+    unit: 'extras',
+    minutes: 5,
+    after: ['bright-to-dark'],
+    load: () => import('./extras/TheSoundOfWonder.tsx'),
+  },
 ]
 
 export function lessonBySlug(slug: string): LessonMeta | undefined {

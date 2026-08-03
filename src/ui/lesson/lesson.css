@@ -99,7 +99,7 @@
   border-radius: 8px;
   cursor: pointer;
   background: var(--panel);
-  color: var(--ink);
+  color: var(--panel-ink);
   border: 1px solid var(--panel-edge);
 }
 
@@ -138,14 +138,14 @@
   border-radius: 9px;
   cursor: pointer;
   background: var(--panel);
-  color: var(--ink);
+  color: var(--panel-ink);
   border: 1px solid var(--panel-edge);
   touch-action: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-.control:hover { border-color: var(--ink-dim); }
+.control:hover { border-color: var(--panel-ink-dim); }
 
 /* The selected option of a toggle. Amber — the "you are here" colour — rather than mint,
    which everywhere else on the site means a correct answer. aria-pressed carries the same

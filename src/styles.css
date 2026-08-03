@@ -23,6 +23,19 @@
   --ink-dim: #a79ecd;
 
   /*
+    Text that sits ON a dark panel.
+    
+    Separate from --ink because --ink flips with the colour scheme and --panel deliberately
+    does not: instruments stay dark in light mode, which is the whole "glowing objects on a
+    paper desk" idea. Using --ink on a panel therefore produced dark text on a dark background
+    in light mode — measured at 1.04:1, which is invisible rather than merely poor.
+    
+    These two never flip. Anything whose background is --panel uses them.
+  */
+  --panel-ink: #ece8ff;
+  --panel-ink-dim: #a79ecd;
+
+  /*
     Functional hues. Each has ONE fixed musical meaning and it is never broken anywhere in
     the app — not in the keyboard, not on the fretboard, not in a chord badge in the prose.
 
@@ -179,7 +192,7 @@ code {
   border-radius: 8px;
   cursor: pointer;
   background: var(--panel);
-  color: var(--ink);
+  color: var(--panel-ink);
   border: 1px solid var(--panel-edge);
   touch-action: none;
 }

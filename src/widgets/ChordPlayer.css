@@ -23,7 +23,7 @@
   border-radius: 9px;
   border: 1px solid var(--panel-edge);
   background: #16102b;
-  color: var(--ink);
+  color: var(--panel-ink);
   cursor: default;
   touch-action: none;
 }
@@ -34,7 +34,7 @@
 /* The bar currently sounding. White rather than amber, matching the keyboard: on this site
    hue means function and brightness means state, and amber already means "root". */
 .chord-card.is-live {
-  border-color: var(--ink);
+  border-color: var(--panel-ink);
   background: linear-gradient(#2b2545, #3a3358);
   box-shadow: 0 0 16px rgba(236, 232, 255, 0.3);
 }
@@ -46,10 +46,10 @@
 
 .chord-card-name {
   font-size: 0.7rem;
-  color: var(--ink-dim);
+  color: var(--panel-ink-dim);
 }
 
-.chord-card.is-live .chord-card-name { color: var(--ink); }
+.chord-card.is-live .chord-card-name { color: var(--panel-ink); }
 
 .chord-picker {
   position: absolute;
@@ -76,7 +76,7 @@
   border-radius: 6px;
   border: 1px solid var(--panel-edge);
   background: var(--panel);
-  color: var(--ink);
+  color: var(--panel-ink);
   cursor: pointer;
   touch-action: none;
 }
@@ -91,10 +91,10 @@
   flex-wrap: wrap;
 }
 
-.chord-player-hint { font-size: 0.75rem; color: var(--ink-dim); }
+.chord-player-hint { font-size: 0.75rem; color: var(--panel-ink-dim); }
 
 @media (prefers-reduced-motion: reduce) {
   .chord-card { transition: none; }
   /* The live bar still has to be identifiable — only the glow goes. */
-  .chord-card.is-live { box-shadow: inset 0 0 0 2px var(--ink); }
+  .chord-card.is-live { box-shadow: inset 0 0 0 2px var(--panel-ink); }
 }
