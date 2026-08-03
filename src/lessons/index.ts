@@ -262,6 +262,15 @@ export const LESSONS: LessonMeta[] = [
     load: () => import('./pentatonic/FiveNotesNoWrongAnswers.tsx'),
   },
   {
+    slug: 'the-shape-on-a-guitar',
+    title: 'The shape on a guitar',
+    summary: 'On a neck a scale is a shape, and changing key just means sliding it.',
+    unit: 'pentatonic',
+    minutes: 5,
+    after: ['five-notes-no-wrong-answers'],
+    load: () => import('./pentatonic/TheShapeOnAGuitar.tsx'),
+  },
+  {
     slug: 'the-blue-note',
     title: 'The blue note',
     summary: 'One extra note turns five safe ones into the blues.',
@@ -314,6 +323,15 @@ export const LESSONS: LessonMeta[] = [
     minutes: 5,
     after: ['take-the-third-out'],
     load: () => import('./rock/BorrowedChords.tsx'),
+  },
+  {
+    slug: 'the-riff',
+    title: 'The riff',
+    summary: 'Two or three notes repeated until they become the song. Change one and the genre moves.',
+    unit: 'rock',
+    minutes: 5,
+    after: ['borrowed-chords'],
+    load: () => import('./rock/TheRiff.tsx'),
   },
   {
     slug: 'the-sound-is-the-idea',

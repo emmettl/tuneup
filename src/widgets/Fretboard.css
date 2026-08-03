@@ -1,0 +1,80 @@
+.fretboard {
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: var(--radius);
+  padding: 10px;
+  overflow-x: auto;
+  touch-action: pan-x;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.fretboard-grid {
+  display: grid;
+  gap: 2px;
+  min-width: 420px;
+}
+
+.fretboard-open {
+  font-size: 0.68rem;
+  color: var(--ink-dim);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 4px;
+}
+
+.fretboard-cell {
+  position: relative;
+  height: 30px;
+  padding: 0;
+  border: none;
+  /* The string, drawn as a line through the middle of the cell rather than as its own
+     element — so a cell is both the string and the target you press. */
+  background:
+    linear-gradient(var(--panel-edge), var(--panel-edge)) center / 100% 1px no-repeat,
+    linear-gradient(rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.07)) right / 1px 100% no-repeat;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+/* The nut: thicker than a fret, because it is. */
+.fretboard-cell.is-open {
+  background:
+    linear-gradient(var(--panel-edge), var(--panel-edge)) center / 100% 1px no-repeat,
+    linear-gradient(var(--ink-dim), var(--ink-dim)) right / 2px 100% no-repeat;
+}
+
+.fretboard-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #6b5fa8;
+  color: #f4f0ff;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fretboard-dot.is-root {
+  background: var(--root);
+  color: #241a08;
+  font-weight: 700;
+}
+
+.fretboard-inlay {
+  font-size: 0.6rem;
+  color: var(--outside);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  padding-top: 2px;
+}
+
+.fretboard-fretnum { color: var(--ink-dim); opacity: 0.5; }
