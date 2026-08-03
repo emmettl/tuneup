@@ -277,6 +277,25 @@ export function rotateSteps(steps: readonly number[], degree: number): number[] 
   })
 }
 
+/**
+ * Which named scale a step formula is, if any.
+ *
+ * The inverse of looking a formula up by name, and what lets a rotated scale name itself:
+ * rotate the major formula by two and you get Dorian's, so a ring whose home has moved can
+ * say what it has become rather than still claiming to be the scale it started as.
+ */
+export function scaleFromSteps(steps: readonly number[]): ScaleId | null {
+  const wanted = [...steps].sort((a, b) => a - b).join(',')
+  return (
+    SCALE_IDS.find((id) => {
+      // Modes share formulas with their parent scale — Ionian IS major — so the first match
+      // in declaration order wins, and SCALES lists the plain names before the mode names.
+      const candidate = SCALES[id].steps
+      return candidate.length === steps.length && [...candidate].sort((a, b) => a - b).join(',') === wanted
+    }) ?? null
+  )
+}
+
 const MODE_ORDER: ScaleId[] = [
   'ionian',
   'dorian',

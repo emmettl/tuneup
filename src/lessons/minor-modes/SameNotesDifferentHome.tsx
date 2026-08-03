@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Aside, Caption, Check, Headline, Lesson, Say, Try } from '../../ui/lesson/index.js'
 import PitchClock from '../../widgets/PitchClock.tsx'
 import ChordPlayer from '../../widgets/ChordPlayer.tsx'
-import { key } from '../../theory/index.js'
+import { key, noteName, spellInKey } from '../../theory/index.js'
 
 // Wow moment: the relative minor.
 //
@@ -11,9 +11,14 @@ import { key } from '../../theory/index.js'
 // rotating the ring precisely so this lesson can show that only one of them happened.
 
 export default function SameNotesDifferentHome() {
-  const [home, setHome] = useState(0) // pitch class, starts on C
+  // Where the ring's marker is. The ring owns it and reports it here — this lesson reacts to
+  // wherever it lands rather than only to the two values it cares about, because a drag that
+  // silently does nothing reads as a broken widget.
+  const [home, setHome] = useState(0)
   const minor = home === 9
+  const atC = home === 0
   const musicKey = minor ? key('A minor') : key('C')
+  const homeName = noteName(spellInKey(60 + home, key('C')))
 
   return (
     <Lesson>
@@ -25,18 +30,18 @@ export default function SameNotesDifferentHome() {
       </Say>
 
       <Try caption="Drag the home marker to A. Watch the lit segments: not one of them changes.">
-        <PitchClock
-          scale={{ key: musicKey, id: minor ? 'natural-minor' : 'major' }}
-          movableHome
-          onRootChange={setHome}
-          labels="note"
-        />
+        {/* Always C major's seven notes. Home moves within them; the ring works out what the
+            result is called. Passing a different scale when home reaches A would change the
+            lit set, which is the one thing this lesson promises does not happen. */}
+        <PitchClock scale={{ key: key('C'), id: 'major' }} movableHome onRootChange={setHome} labels="note" />
       </Try>
 
       <Caption>
         {minor
-          ? `Home is now A. The scale is A natural minor — and it is the same seven notes it was a moment ago.`
-          : `Home is C. Drag the marker to A and nothing about the notes will change.`}
+          ? 'Home is now A. The scale is A natural minor — and it is the same seven notes it was a moment ago.'
+          : atC
+            ? 'Home is C. Drag the marker round to A and watch the lit segments: not one of them moves.'
+            : `Home is on ${homeName}, and the ring has named what that makes it. Every one of these is a real scale — that is chapter four. For now, put it on A.`}
       </Caption>
 
       <Say>

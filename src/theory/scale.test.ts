@@ -11,6 +11,7 @@ import {
   modeOnDegree,
   pitchClassSet,
   rotateSteps,
+  scaleFromSteps,
   scaleNotes,
   scalePitches,
 } from './scale.js'
@@ -225,5 +226,31 @@ describe('pitch class sets', () => {
         )
       }
     }
+  })
+})
+
+describe('naming a formula', () => {
+  it('recognises every scale it knows', () => {
+    for (const id of SCALE_IDS) {
+      expect(scaleFromSteps(SCALES[id].steps), id).not.toBeNull()
+    }
+  })
+
+  it('names a rotated major scale as the mode it has become', () => {
+    // The whole point: a ring whose home has moved must be able to say what it now is,
+    // rather than still claiming to be the scale it started as.
+    expect(scaleFromSteps(rotateSteps(SCALES.major.steps, 1))).toBe('dorian')
+    expect(scaleFromSteps(rotateSteps(SCALES.major.steps, 4))).toBe('mixolydian')
+  })
+
+  it('prefers the plain name over the mode name where they share a formula', () => {
+    // Ionian IS major and Aeolian IS natural minor. Both answers are right; the plain one is
+    // what a beginner should be shown, and declaration order is what decides it.
+    expect(scaleFromSteps(SCALES.major.steps)).toBe('major')
+    expect(scaleFromSteps(SCALES.aeolian.steps)).toBe('natural-minor')
+  })
+
+  it('returns null for a formula it does not know', () => {
+    expect(scaleFromSteps([0, 1, 2, 3])).toBeNull()
   })
 })

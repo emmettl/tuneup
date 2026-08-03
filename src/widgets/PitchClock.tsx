@@ -11,8 +11,11 @@ import { capturePointer, releasePointer } from './capture.js'
 import {
   type Key,
   type ScaleId,
+  SCALES,
   noteName,
   pitchClassOf,
+  rotateSteps,
+  scaleFromSteps,
   scaleNotes,
   spellInKey,
 } from '../theory/index.js'
@@ -45,6 +48,16 @@ export interface PitchClockProps {
   rotatable?: boolean
   /** Let the learner move the home marker without moving the shape. */
   movableHome?: boolean
+  /**
+   * Where home is, if the lesson wants to drive it. Left out, the ring owns it.
+   *
+   * Owning it by default is not a convenience — it is a correctness fix. The marker used to
+   * be derived purely from `scale.key.tonic`, so a lesson that only handled some values of
+   * `onRootChange` silently discarded the rest and the marker snapped back. Dragging it to
+   * five of the seven degrees appeared to do nothing at all, which reads as a broken widget
+   * rather than as a lesson that is not listening.
+   */
+  home?: number
   onRootChange?: (pitchClass: number) => void
   /** Extra colouring on top of the scale — the blue note, the one that changed. */
   emphasis?: { pitchClass: number; tone: ToneRole }[]
@@ -58,6 +71,7 @@ export default function PitchClock({
   scale,
   rotatable = false,
   movableHome = false,
+  home,
   onRootChange,
   emphasis,
   audible = true,
@@ -66,13 +80,37 @@ export default function PitchClock({
 }: PitchClockProps) {
   const svg = useRef<SVGSVGElement>(null)
   const [offset, setOffset] = useState(0)
+  const [ownHome, setOwnHome] = useState<number | null>(null)
   const dragging = useRef<'ring' | 'home' | null>(null)
   const dragFrom = useRef(0)
 
   const ring = useMemo(() => layoutRing(CENTRE, CENTRE, INNER, OUTER), [])
 
-  const tonicClass = (pitchClassOf(scale.key.tonic) + offset) % SEGMENTS
   const spelled = useMemo(() => scaleNotes(scale.key.tonic, scale.id), [scale])
+  const scaleClass = (pitchClassOf(scale.key.tonic) + offset) % SEGMENTS
+  // Controlled if the lesson passes `home`, otherwise the ring's own.
+  const tonicClass = home ?? ownHome ?? scaleClass
+
+  /**
+   * What the scale has become now home has moved.
+   *
+   * The lit notes never change when home moves — that IS the lesson — so the ring must name
+   * the rotation rather than keep claiming to be the scale it started as. C major with home
+   * on D is D Dorian, and saying "D major" there would be teaching something false.
+   */
+  const current = useMemo(() => {
+    const degree = spelled.findIndex(
+      (note) => (pitchClassOf(note) + offset + SEGMENTS) % SEGMENTS === tonicClass,
+    )
+    if (degree <= 0) {
+      return { name: SCALES[scale.id].name, tonic: scale.key.tonic }
+    }
+    const rotated = scaleFromSteps(rotateSteps(SCALES[scale.id].steps, degree))
+    return {
+      name: rotated ? SCALES[rotated].name : SCALES[scale.id].name,
+      tonic: spelled[degree]!,
+    }
+  }, [spelled, offset, tonicClass, scale])
 
   const lit = useMemo(() => {
     const set = new Map<number, ToneRole>()
@@ -110,14 +148,19 @@ export default function PitchClock({
     capturePointer(event.currentTarget, event.pointerId)
     dragFrom.current = pitchClass
 
-    if (movableHome && pitchClass === tonicClass) dragging.current = 'home'
+    // Grabbing anywhere moves home when home is movable. Requiring the learner to hit the
+    // marker exactly is a 30px target on a phone, and missing it silently did nothing.
+    if (movableHome) dragging.current = 'home'
     else if (rotatable) dragging.current = 'ring'
     else dragging.current = null
 
     sound(pitchClass)
-    if (movableHome && dragging.current !== 'ring' && pitchClass !== tonicClass) {
-      onRootChange?.(pitchClass)
-    }
+    if (movableHome && pitchClass !== tonicClass) moveHome(pitchClass)
+  }
+
+  const moveHome = (pitchClass: number) => {
+    if (home === undefined) setOwnHome(pitchClass)
+    onRootChange?.(pitchClass)
   }
 
   const onPointerMove = (event: React.PointerEvent) => {
@@ -130,7 +173,7 @@ export default function PitchClock({
       // other, which is exactly what makes this transposition rather than editing.
       setOffset((current) => (current + pitchClass - dragFrom.current + SEGMENTS) % SEGMENTS)
     } else {
-      onRootChange?.(pitchClass)
+      moveHome(pitchClass)
     }
     dragFrom.current = pitchClass
   }
@@ -158,7 +201,7 @@ export default function PitchClock({
       viewBox={`0 0 ${VIEW} ${VIEW}`}
       style={{ width: size, height: size }}
       role="group"
-      aria-label={`Pitch ring, ${noteName(scale.key.tonic)} ${scale.id}`}
+      aria-label={`Pitch ring, ${noteName(current.tonic)} ${current.name}`}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}
@@ -196,10 +239,10 @@ export default function PitchClock({
       <HomeMarker pitchClass={tonicClass} draggable={movableHome} />
 
       <text x={CENTRE} y={CENTRE - 6} className="pitch-clock-centre" textAnchor="middle">
-        {noteName(scale.key.tonic)}
+        {noteName(current.tonic)}
       </text>
       <text x={CENTRE} y={CENTRE + 14} className="pitch-clock-centre-sub" textAnchor="middle">
-        {scale.id.replace(/-/g, ' ')}
+        {current.name}
       </text>
     </svg>
   )
